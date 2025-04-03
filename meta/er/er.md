@@ -1,4 +1,4 @@
-````mermaid
+```mermaid
 erDiagram
     User {
         int id pk
@@ -93,5 +93,4 @@ erDiagram
     Coupon }o--|| CouponTypes: "Each coupon has a coupon type"
     CouponTypes }o--|| Caterer: "Each caterer will have multiple coupon types"
     CouponDetails }o--|| Coupon: "Each coupon use tracked"
-    ```
-````
+```
