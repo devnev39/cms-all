@@ -46,7 +46,7 @@ erDiagram
 
     Coupon {
         int id pk
-        int couponId fk
+        int couponTypeId fk
         int customerId fk
         int count
         datetime validity
