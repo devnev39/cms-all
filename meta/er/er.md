@@ -40,6 +40,7 @@ erDiagram
         int id pk
         int catererId fk
         char(5) type
+        int minCount
         float originalPrice
         float discountPerCoupon
     }
