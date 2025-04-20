@@ -1,4 +1,4 @@
-````mermaid
+```mermaid
 erDiagram
     User {
         int id pk
@@ -40,13 +40,14 @@ erDiagram
         int id pk
         int catererId fk
         char(5) type
+        int minCount
         float originalPrice
         float discountPerCoupon
     }
 
     Coupon {
         int id pk
-        int couponId fk
+        int couponTypeId fk
         int customerId fk
         int count
         datetime validity
@@ -93,5 +94,4 @@ erDiagram
     Coupon }o--|| CouponTypes: "Each coupon has a coupon type"
     CouponTypes }o--|| Caterer: "Each caterer will have multiple coupon types"
     CouponDetails }o--|| Coupon: "Each coupon use tracked"
-    ```
-````
+```
