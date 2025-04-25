@@ -60,7 +60,7 @@ erDiagram
     orders {
         int id pk
         int caterer_id fk
-        int cid fk
+        int user_id fk
         %% int item_id fk
         datetime created_at
         float total_amount
