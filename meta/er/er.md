@@ -64,6 +64,9 @@ erDiagram
         %% int item_id fk
         datetime created_at
         float total_amount
+        char(50) razorpay_payment_id
+        char(50) razorpay_order_id
+        char(50) razorpay_signature
         char(5) payment_method
     }
 
