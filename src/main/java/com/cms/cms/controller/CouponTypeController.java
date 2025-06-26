@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,11 +20,13 @@ import com.cms.cms.models.entity.CouponType;
 import com.cms.cms.repository.CouponTypeRepository;
 import com.cms.cms.utils.CurrentUser;
 
+import lombok.AllArgsConstructor;
+
 @RestController
 @RequestMapping("/coupon_type")
+@AllArgsConstructor
 public class CouponTypeController {
     
-    @Autowired
     private CouponTypeRepository repo;
 
     @GetMapping("")

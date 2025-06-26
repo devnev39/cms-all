@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.cms.cms.models.common.UserPrincipal;
+import com.cms.cms.models.entity.Role;
 import com.cms.cms.models.entity.User;
 
 import io.jsonwebtoken.Claims;
@@ -29,10 +30,10 @@ public class JwtService {
         return Keys.hmacShaKeyFor(data);
     }
 
-    public String getJwtToken(User user) {
+    public String getJwtToken(User user, Role role) {
         Map<String, Object> hmap = new HashMap<>();
         hmap.put("id", user.getId());
-        
+        hmap.put("role", role.getType()); 
         return Jwts.builder()
             .claims()
             .add(hmap)
@@ -54,6 +55,6 @@ public class JwtService {
             throw new ExpiredJwtException(null, null, "JWT Expired!");
         }
         
-        return new UserPrincipal(new User(claims.getSubject(), ((Number) claims.get("id")).longValue()));
+        return new UserPrincipal(new User(claims.getSubject(), ((Number) claims.get("id")).longValue()), new Role(claims.get("role").toString()));
     }
 }

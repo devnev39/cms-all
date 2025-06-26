@@ -1,6 +1,5 @@
 package com.cms.cms.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -9,19 +8,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cms.cms.exception.CustomEntityNotFoundException;
 import com.cms.cms.models.common.UserPrincipal;
+import com.cms.cms.models.dto.AuthBody;
 import com.cms.cms.models.dto.AuthResponse;
+import com.cms.cms.models.entity.Role;
+import com.cms.cms.repository.RoleRepository;
 import com.cms.cms.services.JwtService;
+
+import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/auth")
+@AllArgsConstructor
 public class AuthController {
 
-    @Autowired
     private AuthenticationManager authManager;
 
-    @Autowired
     private JwtService jwtService;
+
+    private RoleRepository repo;
         
     @PostMapping("")
     public AuthResponse login(@RequestBody AuthBody body) throws Exception {
@@ -31,8 +37,10 @@ public class AuthController {
 
         if (auth.isAuthenticated()) {
             UserPrincipal user = (UserPrincipal) auth.getPrincipal();
+            Role role = repo.findById(user.getUser().getRoleId()).get();
+            if (role == null) throw new CustomEntityNotFoundException("Role");
             return new AuthResponse(
-                jwtService.getJwtToken(user.getUser()),
+                jwtService.getJwtToken(user.getUser(), role),
                 user.getUser()
             );
         }

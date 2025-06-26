@@ -36,6 +36,10 @@ create table item (
     varchar(50) name,
     float price,
     varchar(50) created_by,
+    created_at datetime default (sysdate()),
+    updated_at datetime default (sysdate()),
+    created_by varchar(50),
+    updated_by varchar(50),
     constraint fk_caterer_id foreign key (caterer_id) references caterer(id)
 );
 
@@ -58,6 +62,10 @@ create table coupon_types (
     min_count int,
     original_price float,
     discount_per_coupon float,
+    created_at datetime default (sysdate()),
+    updated_at datetime default (sysdate()),
+    created_by varchar(50),
+    updated_by varchar(50),
     constraint fk_caterer_id foreign key (caterer_id) references caterer(id)
 );
 

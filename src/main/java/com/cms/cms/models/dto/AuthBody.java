@@ -1,4 +1,4 @@
-package com.cms.cms.controller;
+package com.cms.cms.models.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

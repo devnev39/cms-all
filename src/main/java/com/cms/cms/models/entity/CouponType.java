@@ -17,7 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CouponType extends Commons{
    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
-   private Long catererId;
+private Long catererId;
 
    @Column(columnDefinition = "char(5)")
    private String type;

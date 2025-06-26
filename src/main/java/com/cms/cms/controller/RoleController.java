@@ -2,7 +2,6 @@ package com.cms.cms.controller;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,10 +17,13 @@ import com.cms.cms.models.dto.RoleDTO;
 import com.cms.cms.models.entity.Role;
 import com.cms.cms.repository.RoleRepository;
 
+import lombok.AllArgsConstructor;
+
 @RestController
 @RequestMapping("/role")
+@AllArgsConstructor
 public class RoleController {
-    @Autowired
+
     private RoleRepository repo;
 
     @PostMapping("")
