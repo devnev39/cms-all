@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -30,6 +31,7 @@ import com.cms.cms.utils.CurrentUser;
 import lombok.AllArgsConstructor;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:5173"})
 @RequestMapping("/user")
 @AllArgsConstructor
 public class UserController {
@@ -111,6 +113,6 @@ public class UserController {
         // User cannot delete itself
         if (!CurrentUser.hasRole(Roles.ROLE_ADMIN)) throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "Not authorized !");
         repo.deleteById(id);
-        return new OperationResponse("User deleted successfully !");
+        return OperationResponse.createResponse("User deleted successfully !").addItem("id", id).addItem("entity", "User");
     }
 }
