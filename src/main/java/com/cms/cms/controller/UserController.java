@@ -46,7 +46,7 @@ public class UserController {
         // If the role is ROLE_CLNT return only client's own user
         // If the role is ROLE_CSTMR return only customer's own user
         if (CurrentUser.hasRole(Roles.ROLE_ADMIN)) {
-            return repo.findAll();
+            return repo.findByRoleId(CurrentUser.getCurrentRole().getId());
         }
         return Collections.singletonList(getCurrentUser());
     }

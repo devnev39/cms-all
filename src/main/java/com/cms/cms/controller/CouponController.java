@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -24,6 +25,7 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/coupon")
+@CrossOrigin("http://localhost:5173")
 @AllArgsConstructor
 public class CouponController {
     

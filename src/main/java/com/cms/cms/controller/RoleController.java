@@ -2,6 +2,7 @@ package com.cms.cms.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,11 +17,13 @@ import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.dto.RoleDTO;
 import com.cms.cms.models.entity.Role;
 import com.cms.cms.repository.RoleRepository;
+import com.cms.cms.utils.CurrentUser;
 
 import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/role")
+@CrossOrigin(origins = {"http://localhost:5173"})
 @AllArgsConstructor
 public class RoleController {
 
@@ -34,6 +37,14 @@ public class RoleController {
     @GetMapping("")
     public List<Role> getAllRoles() {
         return repo.findAll();
+    }
+
+    @GetMapping("/self")
+    public Role getCurrentRole() {
+        Role r = repo.findRoleByType(CurrentUser.getCurrentRole().getType()).orElseThrow(
+            () -> new CustomEntityNotFoundException("Role")
+        );
+        return r;
     }
 
     @GetMapping("/{id}")

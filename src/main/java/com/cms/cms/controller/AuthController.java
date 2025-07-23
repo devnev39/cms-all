@@ -1,11 +1,19 @@
 package com.cms.cms.controller;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,6 +38,39 @@ public class AuthController {
     private JwtService jwtService;
 
     private RoleRepository repo;
+
+    @GetMapping("")
+    public ResponseEntity<?> login(@RequestHeader(value = "Authorization", required = false) String authHeader) throws Exception {
+        if (authHeader == null || !authHeader.startsWith("Basic")) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("WWW-Authenticate", "Basic realm=\"Access to the auth\"");
+            return new ResponseEntity<>("Auth required !", headers, HttpStatus.UNAUTHORIZED);
+        }
+        String base64Credentials = authHeader.substring("Basic ".length());
+        byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
+        String credentials = new String(credDecoded, StandardCharsets.UTF_8);
+
+        // Split username and password
+        final String[] values = credentials.split(":", 2);
+        if (values.length != 2) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid auth format");
+        }
+
+        String username = values[0];
+        String password = values[1];
+
+        System.out.println(username);
+        System.out.println(password);
+
+        return new ResponseEntity<>(login(new AuthBody(username, password)), new HttpHeaders(), 200);
+    } 
+
+    // @GetMapping("")
+    // public ResponseEntity<String> login() throws Exception {
+    //     HttpHeaders headers = new HttpHeaders();
+    //     headers.add("WWW-Authenticate", "Basic");
+    //     return ResponseEntity.status(401).headers(headers).build();
+    // }
         
     @PostMapping("")
     public AuthResponse login(@RequestBody AuthBody body) throws Exception {

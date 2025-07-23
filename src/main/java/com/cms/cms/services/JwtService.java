@@ -34,6 +34,7 @@ public class JwtService {
         Map<String, Object> hmap = new HashMap<>();
         hmap.put("id", user.getId());
         hmap.put("role", role.getType()); 
+        hmap.put("role_id", role.getId()); 
         return Jwts.builder()
             .claims()
             .add(hmap)
@@ -55,6 +56,6 @@ public class JwtService {
             throw new ExpiredJwtException(null, null, "JWT Expired!");
         }
         
-        return new UserPrincipal(new User(claims.getSubject(), ((Number) claims.get("id")).longValue()), new Role(claims.get("role").toString()));
+        return new UserPrincipal(new User(claims.getSubject(), ((Number) claims.get("id")).longValue()), new Role((Long)claims.get("role_id"),claims.get("role").toString()));
     }
 }
