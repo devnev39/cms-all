@@ -1,4 +1,4 @@
-package com.cms.cms.services;
+package com.cms.cms.utils;
 
 import java.util.Date;
 import java.util.Base64;
@@ -56,6 +56,6 @@ public class JwtService {
             throw new ExpiredJwtException(null, null, "JWT Expired!");
         }
         
-        return new UserPrincipal(new User(claims.getSubject(), ((Number) claims.get("id")).longValue()), new Role((Long)claims.get("role_id"),claims.get("role").toString()));
+        return new UserPrincipal(new User(claims.getSubject(), ((Number) claims.get("id")).longValue()), new Role(((Number)claims.get("role_id")).longValue(),claims.get("role").toString()));
     }
 }

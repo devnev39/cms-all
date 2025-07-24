@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,11 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.cms.exception.CustomEntityNotFoundException;
 import com.cms.cms.models.common.OperationResponse;
-import com.cms.cms.models.dto.CouponDTO;
+import com.cms.cms.models.dto.Coupon.CouponDTO;
+import com.cms.cms.models.dto.Coupon.NewCouponDTO;
 import com.cms.cms.models.entity.Coupon;
+import com.cms.cms.models.entity.CouponType;
+import com.cms.cms.models.entity.User;
 import com.cms.cms.repository.CouponRepository;
+import com.cms.cms.repository.CouponTypeRepository;
+import com.cms.cms.repository.UserRepository;
 import com.cms.cms.utils.CurrentUser;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -30,6 +37,9 @@ import lombok.AllArgsConstructor;
 public class CouponController {
     
     private CouponRepository repo;
+    private UserRepository userRepo;
+    private CouponTypeRepository couponTypeRepo;
+    private final ModelMapper mapper;
 
     @GetMapping("")
     public List<Coupon> getAllCoupons() {
@@ -44,9 +54,16 @@ public class CouponController {
     }
 
     @PostMapping("")
-    public Coupon createCoupon(@RequestBody Coupon coupon) {
-        coupon.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
-        return repo.save(coupon);
+    public Coupon createCoupon(@Valid @RequestBody NewCouponDTO coupon) {
+        User u = userRepo.findById(coupon.getUserId()).orElseThrow(() -> new CustomEntityNotFoundException("User"));
+        CouponType ct = couponTypeRepo.findById(coupon.getCouponTypeId()).orElseThrow(() -> new CustomEntityNotFoundException("Coupon Type"));
+        Coupon c = mapper.map(coupon, Coupon.class);
+
+        c.setUser(u);
+        c.setCouponType(ct);
+        c.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
+
+        return repo.save(c);
     }
 
     @PatchMapping("/{id}")
@@ -62,12 +79,13 @@ public class CouponController {
                 current.setValidity(dto.getValidity().get());
             }
             if (dto.getUserId().isPresent()) {
-                current.setUserId(dto.getUserId().get());
+                User u = userRepo.findById(dto.getUserId().get()).orElseThrow(() -> new CustomEntityNotFoundException("User"));
+                current.setUser(u);
             }
             if (dto.getCouponTypeId().isPresent()) {
-                current.setCouponTypeId(dto.getCouponTypeId().get());
+                CouponType ct = couponTypeRepo.findById(dto.getCouponTypeId().get()).orElseThrow(() -> new CustomEntityNotFoundException("Coupon Type"));
+                current.setCouponType(ct);
             }
-
             current.setUpdatedBy(CurrentUser.getCurrentUser().getEmail());
             current.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 

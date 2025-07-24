@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,12 +17,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.cms.exception.CustomEntityNotFoundException;
+import com.cms.cms.exception.InvalidInputException;
 import com.cms.cms.models.common.OperationResponse;
-import com.cms.cms.models.dto.CouponTypeDTO;
+import com.cms.cms.models.dto.CouponType.CouponTypeDTO;
+import com.cms.cms.models.dto.CouponType.NewCouponTypeDTO;
+import com.cms.cms.models.entity.Caterer;
 import com.cms.cms.models.entity.CouponType;
+import com.cms.cms.repository.CatererRepository;
 import com.cms.cms.repository.CouponTypeRepository;
 import com.cms.cms.utils.CurrentUser;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -30,6 +37,8 @@ import lombok.AllArgsConstructor;
 public class CouponTypeController {
     
     private CouponTypeRepository repo;
+    private final ModelMapper mapper;
+    private final CatererRepository catererRepo;
 
     @GetMapping("")
     public List<CouponType> getAllCouponTypes() {
@@ -44,9 +53,17 @@ public class CouponTypeController {
     }
 
     @PostMapping("")
-    public CouponType createCouponType(@RequestBody CouponType type) {
-        type.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
-        return repo.save(type);
+    public CouponType createCouponType(@Valid @RequestBody NewCouponTypeDTO type, BindingResult result) {
+        // Check if caterer exist
+        if (result.hasErrors()) {
+            throw new InvalidInputException("CouponType", result);
+        }
+        Caterer caterer = catererRepo.findById(type.getCatererId()).orElseThrow(() -> new CustomEntityNotFoundException("Caterer"));
+        CouponType ct = mapper.map(type, CouponType.class);
+        ct.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
+        ct.setCaterer(caterer);
+        ct.setId(null);
+        return repo.save(ct);
     }
 
     @PatchMapping("/{id}")

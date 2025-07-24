@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,12 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.cms.exception.CustomEntityNotFoundException;
 import com.cms.cms.models.common.OperationResponse;
-import com.cms.cms.models.dto.CatererDTO;
+import com.cms.cms.models.dto.Caterer.CatererDTO;
+import com.cms.cms.models.dto.Caterer.NewCatererDTO;
 import com.cms.cms.models.entity.Caterer;
 import com.cms.cms.models.entity.User;
 import com.cms.cms.repository.CatererRepository;
+import com.cms.cms.repository.UserRepository;
 import com.cms.cms.utils.CurrentUser;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -30,7 +34,9 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class CatererController {
     
-    private CatererRepository repo;
+    private final CatererRepository repo;
+    private final UserRepository userRepo;
+    private final ModelMapper mapper;
 
     @GetMapping("")
     public List<Caterer> getAllCaterers() {
@@ -45,14 +51,27 @@ public class CatererController {
     }
 
     @PostMapping("")
-    public Caterer createCaterer(@RequestBody Caterer caterer) {
+    public Caterer createCaterer(@Valid @RequestBody NewCatererDTO caterer) {
+        // get current logged in user
         User u = CurrentUser.getCurrentUser();
-        caterer.setCreatedBy(u.getEmail());
-        return repo.save(caterer);
+
+        // get the caterer user
+        User catererUser = userRepo.findById(caterer.getUserId()).orElseThrow(() -> new CustomEntityNotFoundException("User"));
+
+        // map caterer
+        Caterer c = mapper.map(caterer, Caterer.class);
+        c.setUser(catererUser);
+        
+        // set the id to null
+        c.setId(null);
+
+        // Update the created_by field
+        c.setCreatedBy(u.getEmail());
+        return repo.save(c);
     }
 
     @PatchMapping("/{id}")
-    public Caterer updateUser(@PathVariable Long id, @RequestBody CatererDTO caterer) {
+    public Caterer updateCaterer(@PathVariable Long id, @RequestBody CatererDTO caterer) {
         Optional<Caterer> ct = repo.findById(id);
         if (!ct.isPresent()) throw new CustomEntityNotFoundException("Caterer");
         else {
@@ -61,9 +80,9 @@ public class CatererController {
                 ctf.setName(caterer.getName().get());
             }
             if (caterer.getUserId().isPresent()) {
-                ctf.setUserId(caterer.getUserId().get());
+                User u = userRepo.findById(caterer.getUserId().get()).orElseThrow(() -> new CustomEntityNotFoundException("User"));
+                ctf.setUser(u);
             }
-
             User u = CurrentUser.getCurrentUser();
             ctf.setUpdatedBy(u.getEmail());
             ctf.setUpdatedAt(new Timestamp(System.currentTimeMillis()));

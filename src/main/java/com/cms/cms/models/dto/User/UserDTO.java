@@ -1,7 +1,6 @@
-package com.cms.cms.models.dto;
+package com.cms.cms.models.dto.User;
 
 import java.util.Optional;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

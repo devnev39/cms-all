@@ -1,4 +1,4 @@
-package com.cms.cms.models.dto;
+package com.cms.cms.models.dto.CouponType;
 
 import java.util.Optional;
 
@@ -17,4 +17,5 @@ public class CouponTypeDTO {
     private Optional<Integer> minCount = Optional.empty();
     private Optional<Double> originalPrice = Optional.empty();
     private Optional<Double> discountPerCoupon = Optional.empty();
+    private Optional<Long> catererId = Optional.empty();
 }

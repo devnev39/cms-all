@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.cms.exception.CustomEntityNotFoundException;
 import com.cms.cms.models.common.OperationResponse;
-import com.cms.cms.models.dto.OrderDTO;
+import com.cms.cms.models.dto.Order.OrderDTO;
 import com.cms.cms.models.entity.Order;
 import com.cms.cms.repository.OrderRepository;
 import com.cms.cms.utils.CurrentUser;

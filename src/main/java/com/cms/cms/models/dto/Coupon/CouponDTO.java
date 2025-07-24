@@ -1,4 +1,4 @@
-package com.cms.cms.models.dto;
+package com.cms.cms.models.dto.Coupon;
 
 import java.sql.Timestamp;
 import java.util.Optional;

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.cms.cms.models.common.UserPrincipal;
-import com.cms.cms.services.JwtService;
+import com.cms.cms.utils.JwtService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

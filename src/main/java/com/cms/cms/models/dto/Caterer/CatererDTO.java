@@ -1,4 +1,4 @@
-package com.cms.cms.models.dto;
+package com.cms.cms.models.dto.Caterer;
 
 import java.util.Optional;
 

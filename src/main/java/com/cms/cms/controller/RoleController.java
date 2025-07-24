@@ -17,6 +17,7 @@ import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.dto.RoleDTO;
 import com.cms.cms.models.entity.Role;
 import com.cms.cms.repository.RoleRepository;
+import com.cms.cms.service.RoleService;
 import com.cms.cms.utils.CurrentUser;
 
 import lombok.AllArgsConstructor;
@@ -27,24 +28,21 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class RoleController {
 
-    private RoleRepository repo;
+    private final RoleService roleService;
 
     @PostMapping("")
     public Role createRole(@RequestBody Role r) {
-       return repo.save(r);
+        return roleService.createRole(r);
     }
 
     @GetMapping("")
     public List<Role> getAllRoles() {
-        return repo.findAll();
+        return roleService.getAllRoles();
     }
 
     @GetMapping("/self")
     public Role getCurrentRole() {
-        Role r = repo.findRoleByType(CurrentUser.getCurrentRole().getType()).orElseThrow(
-            () -> new CustomEntityNotFoundException("Role")
-        );
-        return r;
+        return roleService.getCurrentRole();
     }
 
     @GetMapping("/{id}")

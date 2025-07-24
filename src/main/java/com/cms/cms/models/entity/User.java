@@ -23,8 +23,6 @@ public class User extends Commons {
     @ManyToOne
     Role role;
 
-    // Long roleId;
-
     String name;
     String email;
     String password;

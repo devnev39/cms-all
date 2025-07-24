@@ -23,7 +23,7 @@ import com.cms.cms.models.dto.AuthBody;
 import com.cms.cms.models.dto.AuthResponse;
 import com.cms.cms.models.entity.Role;
 import com.cms.cms.repository.RoleRepository;
-import com.cms.cms.services.JwtService;
+import com.cms.cms.utils.JwtService;
 
 import lombok.AllArgsConstructor;
 

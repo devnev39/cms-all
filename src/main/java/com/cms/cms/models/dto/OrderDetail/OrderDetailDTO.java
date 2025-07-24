@@ -1,4 +1,4 @@
-package com.cms.cms.models.dto;
+package com.cms.cms.models.dto.OrderDetail;
 
 import java.util.Optional;
 
