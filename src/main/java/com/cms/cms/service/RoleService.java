@@ -3,13 +3,12 @@ package com.cms.cms.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cms.cms.exception.CustomEntityNotFoundException;
-import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.dto.RoleDTO;
 import com.cms.cms.models.entity.Role;
 import com.cms.cms.repository.RoleRepository;
@@ -19,9 +18,9 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class RoleService {
     private final RoleRepository repo; 
-    private final ModelMapper mapper;
 
     public Role createRole(Role r) {
         return repo.save(r);
