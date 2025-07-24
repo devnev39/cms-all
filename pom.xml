@@ -120,8 +120,8 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <configuration>
                     <url>jdbc:mysql://localhost:3306/cms</url>
-                    <user>local</user>
-					<password>local123</password>
+                    <user>root</user>
+					<password>root</password>
 					<cleanDisabled>false</cleanDisabled>
 					<baselineVersion>0.0</baselineVersion>
 					<baselineOnMigrate>true</baselineOnMigrate>

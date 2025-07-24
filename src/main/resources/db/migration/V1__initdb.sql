@@ -1,4 +1,3 @@
-create database cms;
 use cms;
 create table role (
     id int primary key auto_increment,
@@ -16,7 +15,7 @@ create table user(
     updated_at datetime  default (sysdate()),
     created_by varchar(50),
     updated_by varchar(50),
-    constraint fk_role_id foreign key (role_id) references roles(id)
+    constraint fk_role_id foreign key (role_id) references role(id)
 );
 
 create table caterer (
@@ -27,15 +26,14 @@ create table caterer (
     updated_at datetime  default (sysdate()),
     created_by varchar(50),
     updated_by varchar(50),
-    constraint fk_user_id foreign key (user_id) references users(id)
+    constraint fk_user_id foreign key (user_id) references user(id)
 );
 
 create table item (
     id int primary key auto_increment,
-    int caterer_id,
-    varchar(50) name,
-    float price,
-    varchar(50) created_by,
+    caterer_id int,
+    name varchar(50),
+    price float,
     created_at datetime default (sysdate()),
     updated_at datetime default (sysdate()),
     created_by varchar(50),
@@ -66,7 +64,7 @@ create table coupon_types (
     updated_at datetime default (sysdate()),
     created_by varchar(50),
     updated_by varchar(50),
-    constraint fk_caterer_id foreign key (caterer_id) references caterer(id)
+    constraint fk_coupon_types_caterer_id foreign key (caterer_id) references caterer(id)
 );
 
 create table `order` (
@@ -78,7 +76,7 @@ create table `order` (
     razorpay_order_id char(50),
     razorpay_signature char(50),
     payment_method char(5),
-    constraint fk_user_id foreign key (user_id) references users(id)
+    constraint fk_order_user_id foreign key (user_id) references user(id)
 );
 
 create table order_detail (
@@ -87,8 +85,8 @@ create table order_detail (
     order_id int,
     quantity int,
     price_per_unit float,
-    constraint fk_item_id foreign key (item_id) references items(id),
-    constraint fk_order_id foreign key (order_id) references orders(id)
+    constraint fk_order_detail_item_id foreign key (item_id) references item(id),
+    constraint fk_order_detail_order_id foreign key (order_id) references `order`(id)
 );
 
 create table coupon_usage (
@@ -97,6 +95,6 @@ create table coupon_usage (
     created_at datetime default (sysdate()),
     updated_at datetime default (sysdate()),
     created_by varchar(50),
-    constraint fk_coupon_id foreign key (coupon_id) references coupon(id)
+    constraint fk_coupon_usage_coupon_id foreign key (coupon_id) references coupon(id)
 );
 
