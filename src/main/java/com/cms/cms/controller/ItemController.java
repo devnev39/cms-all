@@ -19,6 +19,7 @@ import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.dto.Item.ItemDTO;
 import com.cms.cms.models.entity.Item;
 import com.cms.cms.repository.ItemRepository;
+import com.cms.cms.service.ItemService;
 import com.cms.cms.utils.CurrentUser;
 
 import lombok.AllArgsConstructor;
@@ -29,50 +30,33 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ItemController {
     
-    private ItemRepository repo;
+    private ItemService itemService;
 
     @GetMapping("")
     public List<Item> getAllItems() {
-        return repo.findAll();
+        return itemService.getAllItems();
     }
 
     @GetMapping("/{id}")
     public Item getItemById(@PathVariable Long id) {
-        Optional<Item> item = repo.findById(id);
-        if (!item.isPresent()) throw new CustomEntityNotFoundException("Item");
-        return item.get();
+        Item  item =itemService.getItemById(id);
+        
+        return item;
     }
 
     @PostMapping("")
     public Item createItem(@RequestBody Item item) {
         item.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
-        return repo.save(item);
+        return itemService.createItem(item);
     }
 
     @PatchMapping("/{id}")
     public Item updateItem(@PathVariable Long id, @RequestBody ItemDTO dto) {
-        Optional<Item> item = repo.findById(id);
-        if (!item.isPresent()) throw new CustomEntityNotFoundException("Item");
-        else {
-            Item current = item.get();
-            if (dto.getName().isPresent()) {
-                current.setName(dto.getName().get());
-            }
-
-            if (dto.getPrice().isPresent()) {
-                current.setPrice(dto.getPrice().get());
-            }
-
-            current.setUpdatedBy(CurrentUser.getCurrentUser().getEmail());
-            current.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
-
-            return repo.save(current);
-        }
+        return  itemService.updateItem(id, dto);
     }
 
     @DeleteMapping("/{id}")
     public OperationResponse deleteItem(@PathVariable Long id) {
-        repo.deleteById(id);
-        return new OperationResponse("Item deleted succssfully !");
+    	return itemService.deleteItem(id);
     }
 }
