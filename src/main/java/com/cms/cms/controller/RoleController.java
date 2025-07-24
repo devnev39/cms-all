@@ -1,7 +1,8 @@
 package com.cms.cms.controller;
 import java.util.List;
-import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,13 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cms.cms.exception.CustomEntityNotFoundException;
 import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.dto.RoleDTO;
 import com.cms.cms.models.entity.Role;
-import com.cms.cms.repository.RoleRepository;
 import com.cms.cms.service.RoleService;
-import com.cms.cms.utils.CurrentUser;
 
 import lombok.AllArgsConstructor;
 
@@ -47,28 +45,19 @@ public class RoleController {
 
     @GetMapping("/{id}")
     public Role getRoleById(@PathVariable Long id) {
-        Optional<Role> opt = repo.findById(id);
-        if (opt.isPresent()) return opt.get();
-        else throw new CustomEntityNotFoundException("Role");
+        return roleService.getRoleById(id);
     }
 
     @PatchMapping("/{id}")
     public Role updateRole(@PathVariable Long id, @RequestBody RoleDTO role) {
-        // Find role
-        Optional<Role> opt = repo.findById(id);
-        if (!opt.isPresent()) throw new CustomEntityNotFoundException("Role");
-        else {
-            Role present_role = opt.get();
-            if (role.getType().isPresent()) present_role.setType(role.getType().get());
-
-            // update the role
-            return repo.save(present_role);
-        }
+        return roleService.updateRole(id, role); 
     }
 
     @DeleteMapping("/{id}")
-    public OperationResponse deleteRole(@PathVariable Long id) {
-        repo.deleteById(id);
-        return new OperationResponse("Role deleted successfully !");
+    public ResponseEntity<?> deleteRole(@PathVariable Long id) {
+        if (roleService.deleteRole(id)) {
+            return new ResponseEntity<OperationResponse>(new OperationResponse("Role deleted successfully !"), HttpStatus.OK);
+        }
+        return new ResponseEntity<OperationResponse>(new OperationResponse("Error occured !"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
