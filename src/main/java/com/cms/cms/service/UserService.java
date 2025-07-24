@@ -21,87 +21,96 @@ import com.cms.cms.repository.RoleRepository;
 import com.cms.cms.repository.UserRepository;
 import com.cms.cms.utils.CurrentUser;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class UserService {
-    private final UserRepository repo;
-    private final RoleRepository roleRepo;
-    private final ModelMapper mapper; 
-    
-    public List<User> getAllUsers() {
-        
-        if (CurrentUser.hasRole(Roles.ROLE_ADMIN)) {
-            // Return users with role ROLE_CLNT
-            // Get role with ROLE_CLNT
-            Role r = roleRepo.findRoleByType(Roles.ROLE_CLNT.toString()).orElseThrow(() -> new CustomEntityNotFoundException("Role"));
-            return repo.findByRole(r);
-        }
-        return Collections.singletonList(getCurrentUser());
-    }
+	private final UserRepository repo;
+	private final RoleRepository roleRepo;
+	private final ModelMapper mapper;
 
-    public User getCurrentUser(){
-        User u = repo.findById(CurrentUser.getCurrentUserId()).orElseThrow(() -> new CustomEntityNotFoundException("User"));
-        u.setPassword("");
-        return u;
-    }
+	public List<User> getAllUsers() {
 
-    public User getUserById(Long id) {
-        Optional<User> user = repo.findById(id);
-        if (!user.isPresent()) throw new CustomEntityNotFoundException("User");
-        return user.get();
-    }
+		if (CurrentUser.hasRole(Roles.ROLE_ADMIN)) {
+			// Return users with role ROLE_CLNT
+			// Get role with ROLE_CLNT
+			Role r = roleRepo.findRoleByType(Roles.ROLE_CLNT.toString())
+					.orElseThrow(() -> new CustomEntityNotFoundException("Role"));
+			return repo.findByRole(r);
+		}
+		return Collections.singletonList(getCurrentUser());
+	}
 
-    public User createUser(NewUserDTO u) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        u.setPassword(encoder.encode(u.getPassword()));
-        // get the role from role_id
+	public User getCurrentUser() {
+		User u = repo.findById(CurrentUser.getCurrentUserId())
+				.orElseThrow(() -> new CustomEntityNotFoundException("User"));
+		u.setPassword("");
+		return u;
+	}
 
-        Role r = roleRepo.findById(u.getRoleId()).orElseThrow(() -> new CustomEntityNotFoundException("Role"));
+	public User getUserById(Long id) {
+		Optional<User> user = repo.findById(id);
+		if (!user.isPresent())
+			throw new CustomEntityNotFoundException("User");
+		return user.get();
+	}
 
-        User user = mapper.map(u, User.class);
+	public User createUser(NewUserDTO u) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		u.setPassword(encoder.encode(u.getPassword()));
+		// get the role from role_id
 
-        user.setRole(r);
-        user.setId(null);
-        user.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
+		Role r = roleRepo.findById(u.getRoleId()).orElseThrow(() -> new CustomEntityNotFoundException("Role"));
 
-        return repo.save(user);
-    }
+		User user = mapper.map(u, User.class);
 
-    public User updateUser(Long id, UserDTO user) {
-        if (!CurrentUser.hasRole(Roles.ROLE_ADMIN) && CurrentUser.getCurrentUserId() != id) throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "Not authorized !");
-        Optional<User> u = repo.findById(id);
-        if (!u.isPresent()) throw new CustomEntityNotFoundException("User");
-        else {
-            User present_user = u.get();
-            if (user.getName().isPresent()) {
-                present_user.setName(user.getName().get());
-            }
-            if (user.getEmail().isPresent()) {
-                present_user.setEmail(user.getEmail().get());
-            }
-            if (user.getMobile().isPresent()) {
-                present_user.setMobile(user.getMobile().get());
-            }
-            if (user.getRoleId().isPresent()) {
-                // present_user.setRoleId(user.getRoleId().get());
-                // get the role
-                // set the role
-                Role role = roleRepo.findById(user.getRoleId().get()).orElseThrow(() -> new CustomEntityNotFoundException("Role"));
-                present_user.setRole(role);
-            }
+		user.setRole(r);
+		user.setId(null);
+		user.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
 
-            // Default updates
-            present_user.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
-            present_user.setUpdatedBy(("#user"));
-            return repo.save(present_user);
-        }
-    }
+		return repo.save(user);
+	}
 
-    public boolean deleteUser(Long id) {
-        if (!CurrentUser.hasRole(Roles.ROLE_ADMIN)) throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "Not authorized !");
-        repo.deleteById(id);
-        return true;
-    }
+	public User updateUser(Long id, UserDTO user) {
+		if (!CurrentUser.hasRole(Roles.ROLE_ADMIN) && CurrentUser.getCurrentUserId() != id)
+			throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "Not authorized !");
+		Optional<User> u = repo.findById(id);
+		if (!u.isPresent())
+			throw new CustomEntityNotFoundException("User");
+		else {
+			User present_user = u.get();
+			if (user.getName().isPresent()) {
+				present_user.setName(user.getName().get());
+			}
+			if (user.getEmail().isPresent()) {
+				present_user.setEmail(user.getEmail().get());
+			}
+			if (user.getMobile().isPresent()) {
+				present_user.setMobile(user.getMobile().get());
+			}
+			if (user.getRoleId().isPresent()) {
+				// present_user.setRoleId(user.getRoleId().get());
+				// get the role
+				// set the role
+				Role role = roleRepo.findById(user.getRoleId().get())
+						.orElseThrow(() -> new CustomEntityNotFoundException("Role"));
+				present_user.setRole(role);
+			}
+
+			// Default updates
+			present_user.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+			present_user.setUpdatedBy(("#user"));
+			return repo.save(present_user);
+		}
+	}
+
+	public boolean deleteUser(Long id) {
+		if (!CurrentUser.hasRole(Roles.ROLE_ADMIN))
+			throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "Not authorized !");
+		repo.deleteById(id);
+		return true;
+	}
 }
