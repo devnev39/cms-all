@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cms.cms.exception.CustomEntityNotFoundException;
 import com.cms.cms.models.entity.Role;
@@ -14,6 +15,7 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class RoleService {
     private final RoleRepository repo; 
     private final ModelMapper mapper;
