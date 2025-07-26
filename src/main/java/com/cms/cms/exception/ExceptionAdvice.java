@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionAdvice {
     @ExceptionHandler({CustomEntityNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    Map<String, String> entityNotFoundException(CustomEntityNotFoundException ex) {
+    ResponseEntity<?> entityNotFoundException(CustomEntityNotFoundException ex) {
         HashMap<String, String> hm = new HashMap<>();
         hm.put("message", ex.getMessage());
-        return hm;
+        return ResponseEntity.status(404).body(hm);
     }
 
     @ExceptionHandler(InvalidInputException.class)
@@ -23,12 +23,5 @@ public class ExceptionAdvice {
         HashMap<String, String> hm = new HashMap<>();
         hm.put("message", ex.getMessage());
         return ResponseEntity.status(405).body(hm);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> bindException(CustomEntityNotFoundException ex) {
-        HashMap<String, String> hm = new HashMap<>();
-        hm.put("message", ex.getMessage());
-        return ResponseEntity.status(500).body(hm);
     }
 }

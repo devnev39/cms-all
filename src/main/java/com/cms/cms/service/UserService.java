@@ -47,7 +47,6 @@ public class UserService {
 	public User getCurrentUser() {
 		User u = repo.findById(CurrentUser.getCurrentUserId())
 				.orElseThrow(() -> new CustomEntityNotFoundException("User"));
-		u.setPassword("");
 		return u;
 	}
 
@@ -69,7 +68,7 @@ public class UserService {
 
 		user.setRole(r);
 		user.setId(null);
-		user.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
+		// user.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
 
 		return repo.save(user);
 	}

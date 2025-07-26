@@ -5,8 +5,10 @@ import java.util.Base64;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.cms.exception.CustomEntityNotFoundException;
+import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.common.UserPrincipal;
 import com.cms.cms.models.dto.AuthBody;
 import com.cms.cms.models.dto.AuthResponse;
@@ -73,20 +76,29 @@ public class AuthController {
     // }
         
     @PostMapping("")
-    public AuthResponse login(@RequestBody AuthBody body) throws Exception {
-        Authentication auth = authManager.authenticate(
-            new UsernamePasswordAuthenticationToken(body.getEmail(), body.getPassword())
-        );
-
-        if (auth.isAuthenticated()) {
-            UserPrincipal user = (UserPrincipal) auth.getPrincipal();
-            Role role = repo.findById(user.getUser().getRoleId()).get();
-            if (role == null) throw new CustomEntityNotFoundException("Role");
-            return new AuthResponse(
-                jwtService.getJwtToken(user.getUser(), role),
-                user.getUser()
+    public ResponseEntity<?> login(@RequestBody AuthBody body) throws Exception {
+        try {
+            Authentication auth = authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(body.getEmail(), body.getPassword())
             );
+
+            if (auth.isAuthenticated()) {
+                UserPrincipal user = (UserPrincipal) auth.getPrincipal();
+                Role role = repo.findById(user.getUser().getRoleId()).get();
+                if (role == null) throw new CustomEntityNotFoundException("Role");
+                return new ResponseEntity<AuthResponse>(
+                    new AuthResponse(
+                        jwtService.getJwtToken(user.getUser(), role),
+                        user.getUser()
+                    ),
+                    HttpStatus.OK
+                );
+            }   
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<OperationResponse>(new OperationResponse("Invalid username or password !"), HttpStatus.UNAUTHORIZED);
         }
         throw new Exception("Error occured !");
     }
 }
+
+// $2a$10$v1Zz1CJnRpfIMIxDem8x2.zXi0u2IBjulHmebh7LAn3fuq76Ovk9C

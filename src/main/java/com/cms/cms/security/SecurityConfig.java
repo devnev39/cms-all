@@ -42,13 +42,13 @@ public class SecurityConfig {
         return http
             .cors(Customizer.withDefaults())
             .csrf(csrf -> csrf.disable())
+            // .authorizeHttpRequests(request -> request.requestMatchers("**").permitAll())
             .authorizeHttpRequests(request -> 
                 request.requestMatchers("/auth/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll()
                 .requestMatchers(HttpMethod.POST,"/user").permitAll()
-                .requestMatchers(HttpMethod.POST, "/user").permitAll()
                 .anyRequest()
                 .authenticated()
             )
