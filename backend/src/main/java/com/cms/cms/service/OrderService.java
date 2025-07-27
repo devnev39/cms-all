@@ -4,10 +4,12 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.cms.cms.exception.CustomEntityNotFoundException;
 import com.cms.cms.models.common.OperationResponse;
+import com.cms.cms.models.dto.Order.NewOrderDTO;
 import com.cms.cms.models.dto.Order.OrderDTO;
 import com.cms.cms.models.entity.Order;
 import com.cms.cms.repository.OrderRepository;
@@ -22,6 +24,7 @@ import lombok.AllArgsConstructor;
 public class OrderService {
 
 	private final OrderRepository repo;
+	private final ModelMapper mapper;
 
 	public List<Order> getAllOrders() {
 		return repo.findAll();
@@ -34,7 +37,8 @@ public class OrderService {
 		return order.get();
 	}
 
-	public Order createOrder(Order order) {
+	public Order createOrder(NewOrderDTO orderDTO) {
+		Order order = mapper.map(orderDTO, Order.class);
 		order.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
 		return repo.save(order);
 	}
