@@ -2,6 +2,7 @@ package com.cms.cms.controller;
 
 import java.util.List;
 
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,11 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cms.cms.exception.InvalidInputException;
 import com.cms.cms.models.common.OperationResponse;
+import com.cms.cms.models.dto.Order.NewOrderDTO;
 import com.cms.cms.models.dto.Order.OrderDTO;
 import com.cms.cms.models.entity.Order;
 import com.cms.cms.service.OrderService;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -38,7 +42,10 @@ public class OrderController {
 	}
 
 	@PostMapping("")
-	public Order createOrder(@RequestBody Order order) {
+	public Order createOrder(@Valid @RequestBody NewOrderDTO order, BindingResult result) {
+		if(result.hasErrors()) {
+			throw new InvalidInputException("Order", result);
+		}
 		return orderService.createOrder(order);
 	}
 
