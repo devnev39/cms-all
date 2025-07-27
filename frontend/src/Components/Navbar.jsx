@@ -7,7 +7,7 @@ const Navbar = () => {
     <nav className="navbar navbar-expand-lg navbar-dark bg-warning shadow-sm">
       <div className="container-fluid">
         <NavLink className="navbar-brand fw-bold fs-3 text-dark" to="/">
-          🍽️ Canteen CMS
+         Canteen CMS
         </NavLink>
         <button
           className="navbar-toggler"
@@ -58,17 +58,17 @@ const Navbar = () => {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                👤 Account
+                 Account
               </a>
               <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <li>
                   <NavLink className="dropdown-item" to="/profile">
-                    Profile
+                   Profile
                   </NavLink>
                 </li>
                 <li>
                   <NavLink className="dropdown-item" to="/settings">
-                    Settings
+                   Settings
                   </NavLink>
                 </li>
                 <li><hr className="dropdown-divider" /></li>
