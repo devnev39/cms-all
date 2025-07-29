@@ -8,18 +8,22 @@ import AdminDashboard from "./pages/Dashboard/AdminDashboard";
 import ClientDashboard from "./pages/Dashboard/ClientDashboard";
 import CustomerDashboard from "./pages/Dashboard/CustomerDashboard";
 
-
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout />} />
-        <Route path="/" Component={<Landing />} />
-        <Route path="/login" Component={<Login />} />
-        <Route path="/register" Component={<Register />} />
-        <Route path="admin" element={<AdminDashboard />} />
-        <Route path="staff" element={<ClientDashboard />} />
-        <Route path="customer" element={<CustomerDashboard />} />
+        {/* Shared Layout with Navbar */}
+        <Route path="/" element={<Layout />}>
+          {/* This will be rendered at "/" */}
+          <Route index element={<Landing />} />
+
+          {/* Other nested pages */}
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="admin" element={<AdminDashboard />} />
+          <Route path="staff" element={<ClientDashboard />} />
+          <Route path="customer" element={<CustomerDashboard />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
