@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   updateCaterer,
   removeCaterer,
   addCaterer,
+  setCaterers,
 } from "../features/user/catererSlice";
 import {
   createCaterer,
   updateCaterer as updateCatererService,
   deleteCaterer,
+  getAllCaterers,
 } from "../services/user/caterer";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -22,6 +24,20 @@ function Caterers() {
   const [showModal, setShowModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedCaterer, setSelectedCaterer] = useState(null);
+  useEffect(() => {
+    if (!caterers) {
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        getAllCaterers(token)
+          .then((resp) => {
+            dispatch(setCaterers(resp.data));
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+    }
+  }, []);
 
   const formik = useFormik({
     initialValues: {

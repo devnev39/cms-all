@@ -1,7 +1,7 @@
 import axios from "axios";
 import config from "../../config/config";
 
-export function getAllCagterers(token) {
+export function getAllCaterers(token) {
   return axios.get(`${config.base_url}/caterer`, {
     headers: {
       Authorization: `Bearer ${token}`,
