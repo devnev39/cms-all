@@ -3,6 +3,7 @@ package com.cms.cms.controller;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cms.cms.exception.InvalidInputException;
 import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.dto.Caterer.CatererDTO;
 import com.cms.cms.models.dto.Caterer.NewCatererDTO;
@@ -40,7 +42,10 @@ public class CatererController {
     }
 
     @PostMapping("")
-    public Caterer createCaterer(@Valid @RequestBody NewCatererDTO caterer) {
+    public Caterer createCaterer(@Valid @RequestBody NewCatererDTO caterer, BindingResult result) {
+    	if(result.hasErrors()) {
+    		throw new InvalidInputException("Caterer", result);
+    	}
        return catererService.createCaterer(caterer);
     }
 

@@ -1,9 +1,8 @@
 package com.cms.cms.controller;
 
-import java.sql.Timestamp;
 import java.util.List;
-import java.util.Optional;
 
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,14 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cms.cms.exception.CustomEntityNotFoundException;
+import com.cms.cms.exception.InvalidInputException;
 import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.dto.Item.ItemDTO;
+import com.cms.cms.models.dto.Item.NewItemDTO;
 import com.cms.cms.models.entity.Item;
-import com.cms.cms.repository.ItemRepository;
 import com.cms.cms.service.ItemService;
-import com.cms.cms.utils.CurrentUser;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -45,9 +44,11 @@ public class ItemController {
     }
 
     @PostMapping("")
-    public Item createItem(@RequestBody Item item) {
-        item.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
-        return itemService.createItem(item);
+    public Item createItem(@Valid @RequestBody NewItemDTO item,BindingResult result) {
+    	 if (result.hasErrors()) {
+             throw new InvalidInputException("Item", result);
+         }
+         return itemService.createItem(item);
     }
 
     @PatchMapping("/{id}")
