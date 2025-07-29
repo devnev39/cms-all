@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cms.cms.exception.InvalidInputException;
 import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.dto.CouponType.CouponTypeDTO;
 import com.cms.cms.models.dto.CouponType.NewCouponTypeDTO;
@@ -42,7 +43,9 @@ public class CouponTypeController {
 
     @PostMapping("")
     public CouponType createCouponType(@Valid @RequestBody NewCouponTypeDTO type, BindingResult result) {
-        
+        if(result.hasErrors()){
+            throw new InvalidInputException("CouponType", result);
+        }
         return couponTypeService.createCouponType(type, result);
     }
 
