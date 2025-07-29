@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setUsers,
@@ -22,6 +22,21 @@ function Clients() {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+
+  useEffect(() => {
+    if (!users) {
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        getAllUsers(token)
+          .then((resp) => {
+            dispatch(setUsers(resp.data));
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+    }
+  }, []);
 
   // Update User Formik
   const updateFormik = useFormik({
