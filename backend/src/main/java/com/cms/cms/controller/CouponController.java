@@ -2,6 +2,7 @@ package com.cms.cms.controller;
 
 import java.util.List;
 
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cms.cms.exception.InvalidInputException;
 import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.dto.Coupon.CouponDTO;
 import com.cms.cms.models.dto.Coupon.NewCouponDTO;
@@ -39,12 +41,18 @@ public class CouponController {
     }
 
     @PostMapping("")
-    public Coupon createCoupon(@Valid @RequestBody NewCouponDTO coupon) {
+    public Coupon createCoupon(@Valid @RequestBody NewCouponDTO coupon, BindingResult bindingResult) {
+        
+        // check coupon is valid or not
+        if(bindingResult.hasErrors()){
+            throw new InvalidInputException("Coupon", bindingResult);
+        }
+        
         return couponService.createCoupon(coupon);
     }
 
     @PatchMapping("/{id}")
-    public Coupon updateCoupon(@PathVariable Long id, @RequestBody CouponDTO dto) {
+    public Coupon updateCoupon(@PathVariable Long id, @RequestBody CouponDTO dto) { // no need to Validate couponDTO as fields are optional
         return couponService.updateCoupon(id, dto);
     }
 
