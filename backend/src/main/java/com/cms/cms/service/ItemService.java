@@ -4,12 +4,14 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cms.cms.exception.CustomEntityNotFoundException;
 import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.dto.Item.ItemDTO;
+import com.cms.cms.models.dto.Item.NewItemDTO;
 import com.cms.cms.models.entity.Item;
 import com.cms.cms.repository.ItemRepository;
 import com.cms.cms.utils.CurrentUser;
@@ -21,6 +23,7 @@ import lombok.AllArgsConstructor;
 @Transactional
 public class ItemService {
 	private ItemRepository repo;
+	private final ModelMapper mapper;
 	
     public List<Item> getAllItems() {
         return repo.findAll();
@@ -34,9 +37,10 @@ public class ItemService {
     }
 
     
-    public Item createItem( Item item) {
-        item.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
-        return repo.save(item);
+    public Item createItem( NewItemDTO item) {
+    	Item newItem = mapper.map(item, Item.class);
+    	newItem.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
+        return repo.save(newItem);
     }
 
     

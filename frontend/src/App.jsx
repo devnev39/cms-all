@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router";
+import Layout from "./Components/Layout";
 import Landing from "./pages/Home/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -10,6 +11,10 @@ import Caterers from "./pages/Caterers";
 import Items from "./pages/Items";
 import CouponTypes from "./pages/CouponTypes";
 import Coupons from "./pages/Coupons";
+
+import AdminDashboard from "./pages/Dashboard/AdminDashboard";
+import ClientDashboard from "./pages/Dashboard/ClientDashboard";
+import CustomerDashboard from "./pages/Dashboard/CustomerDashboard";
 
 function App() {
   return (
