@@ -4,10 +4,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 const Navbar = () => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-warning shadow-sm">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
       <div className="container-fluid">
         <NavLink className="navbar-brand fw-bold fs-3 text-dark" to="/">
-         Canteen CMS
+         ServeEasy
         </NavLink>
         <button
           className="navbar-toggler"
@@ -24,7 +24,7 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarNavDropdown">
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <NavLink to="/" className="nav-link text-dark" activeclassname="active" exact>
+              <NavLink to="/" className="nav-link text-dark" activeclassname="active" exact="true">
                 Home
               </NavLink>
             </li>
