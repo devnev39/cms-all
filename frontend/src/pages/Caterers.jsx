@@ -82,7 +82,7 @@ function Caterers() {
       name: selectedCaterer?.name || "",
       razorpay_key: selectedCaterer?.razorpay_key || "",
       razorpay_secret: selectedCaterer?.razorpay_secret || "",
-      userId: selectedCaterer?.userId || "",
+      userId: selectedCaterer?.user.id || "",
     },
     validationSchema: yup.object({
       name: yup.string().max(50, "Max 50 chars").required("Name required"),
@@ -133,11 +133,11 @@ function Caterers() {
   };
 
   return (
-    <div className="container mt-4">
-      <h2 className="mb-4 text-center">Caterers</h2>
-      <div className="table-responsive">
-        <table className="table table-striped table-bordered rounded">
-          <thead className="table-primary">
+    <div className="container">
+      <div className="mb-4 mt-5 display-6 text-white">Caterers</div>
+      <div className="table-responsive rounded border p-2 shadow bg-white">
+        <table className="table table-striped table-bordered table-hover">
+          <thead>
             <tr>
               <th>ID</th>
               <th>Name</th>
@@ -162,7 +162,7 @@ function Caterers() {
                   </td>
                   <td>
                     <button
-                      className="btn btn-sm btn-primary me-2"
+                      className="btn btn-sm btn-outline-primary me-2"
                       onClick={() => {
                         setSelectedCaterer(caterer);
                         setShowUpdateModal(true);
@@ -171,7 +171,7 @@ function Caterers() {
                       <FaEdit />
                     </button>
                     <button
-                      className="btn btn-sm btn-danger"
+                      className="btn btn-sm btn-outline-danger"
                       onClick={() => handleDelete(caterer.id)}
                     >
                       <FaTrash />
@@ -189,7 +189,7 @@ function Caterers() {
           </tbody>
         </table>
       </div>
-      <div className="d-flex justify-content-center mb-4">
+      <div className="d-flex justify-content-center my-4">
         <button className="btn btn-success" onClick={() => setShowModal(true)}>
           <FaPlus className="me-2" />
           Create Caterer

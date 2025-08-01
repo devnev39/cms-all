@@ -11,6 +11,7 @@ import {
   MdLogout,
 } from "react-icons/md";
 import { Link, NavLink } from "react-router";
+import { FaBars, FaHamburger } from "react-icons/fa";
 
 const menuOptions = {
   ROLE_ADMIN: [
@@ -57,11 +58,14 @@ const menuOptions = {
 const renderMenuProps = (menuOptions, currentPath) => {
   return menuOptions.map((menu) => (
     <li
-      className={`nav-item d-flex w-100 my-2 border rounded border-primary${
+      className={`nav-item d-flex w-100 my-2${
         currentPath === "/" + menu.url ? " active-list-item" : ""
       }`}
     >
-      <NavLink className="nav-link active hover-highlight w-100" to={menu.url}>
+      <NavLink
+        className="nav-link active hover-highlight text-white w-100"
+        to={menu.url}
+      >
         <div className="d-inline mx-2">{menu.icon}</div>
         <div className="d-inline">{menu.label}</div>
       </NavLink>
@@ -71,28 +75,18 @@ const renderMenuProps = (menuOptions, currentPath) => {
 
 function Menubar() {
   const user = useSelector((state) => state.user.user);
+  const location = useLocation();
   return (
     <>
       <nav
-        className="navbar navbar-expand-md bg-body-tertiary d-flex flex-column justify-content-center"
-        style={{ height: "100vh" }}
+        className="navbar navbar-expand-md d-flex flex-column justify-content-center"
+        style={{
+          height: "100vh",
+          background: "rgba(255,255,255,0.10)", // transparent white with small opacity
+          fontFamily: "Segoe UI, Arial, sans-serif",
+          color: "#fff",
+        }}
       >
-        {/* Add style for li hover highlight and active */}
-        <style>{`
-          .navbar-nav .nav-item:hover {
-            background-color:rgb(227, 242, 253);
-            transition: background 0.2s;
-          }
-          .logout-link:hover {
-            background-color:rgb(253, 227, 227);
-            transition: background 0.2s;
-          }
-          .active-list-item {
-            background-color: #bbdefb !important;
-            border-width: 2px;
-            border-color: #1976d2 !important;
-          }
-        `}</style>
         <div className="container-fluid">
           <button
             className="navbar-toggler"
@@ -102,10 +96,10 @@ function Menubar() {
             aria-controls="offcanvasNavbar"
             aria-label="Toggle navigation"
           >
-            <span className="navbar-toggler-icon"></span>
+            <FaBars style={{ color: "#fff" }} />
           </button>
           <div
-            className="offcanvas offcanvas-start"
+            className="offcanvas offcanvas-start bg-transparent"
             tabIndex="-1"
             id="offcanvasNavbar"
             aria-labelledby="offcanvasNavbarLabel"
@@ -121,17 +115,17 @@ function Menubar() {
                 aria-label="Close"
               ></button>
             </div>
-            <div className="offcanvas-body d-flex flex-column align-items-start justify-content-center">
-              <ul className="navbar-nav justify-content-start flex-grow-1 pe-3 d-flex flex-column fs-4">
+            <div className="offcanvas-body bg-transparent d-flex flex-column align-items-center justify-content-center">
+              <ul className="navbar-nav justify-content-center flex-grow-1 pe-3 d-flex flex-column fs-4">
                 {user && user?.role
                   ? renderMenuProps(
                       menuOptions[user.role.type],
                       location.pathname
                     )
                   : null}
-                <li className="d-flex w-100 my-2 border rounded border-danger logout-link">
+                <li className="d-flex w-100 my-2 logout-link">
                   <a
-                    className="nav-link active hover-highlight w-100"
+                    className="nav-link active hover-highlight w-100 text-danger"
                     aria-current="page"
                     href={"/login"}
                     onClick={() => {
@@ -148,6 +142,40 @@ function Menubar() {
             </div>
           </div>
         </div>
+        <style>{`
+          .navbar-nav .nav-item {
+            color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 1.15rem;
+            letter-spacing: 0.5px;
+            border-radius: 10px;
+            transition: background 0.2s, color 0.2s;
+          }
+          .navbar-nav .nav-item .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+            opacity: 0.95;
+          }
+          .navbar-nav .nav-item:hover {
+            background: rgba(33, 37, 41, 0.25);
+            color: #4caf50 !important;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transform: scale(1.03);
+          }
+          .navbar-nav .nav-item:hover .nav-link {
+            color: #4caf50 !important;
+          }
+          .logout-link:hover {
+            background-color:rgba(253, 227, 227, 0.7);
+            transition: background 0.2s;
+          }
+          .active-list-item {
+            background-color:rgba(190, 251, 187, 0.2) !important;
+            border-width: 2px;
+            border-color: #1976d2 !important;
+            color: #1976d2 !important;
+          }
+        `}</style>
       </nav>
     </>
   );

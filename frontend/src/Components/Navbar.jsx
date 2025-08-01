@@ -1,13 +1,75 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../features/user/userSlice";
+
+const menuOptions = {
+  ROLE_ADMIN: [
+    {
+      label: "Dashboard",
+      url: "dashboard",
+    },
+    {
+      label: "Clients",
+      url: "clients",
+    },
+    {
+      label: "Caterers",
+      url: "caterers",
+    },
+  ],
+  ROLE_CLNT: [
+    {
+      label: "Dashboard",
+      url: "dashboard",
+    },
+    {
+      label: "Items",
+      url: "items",
+    },
+    {
+      label: "Coupon Types",
+      url: "coupontypes",
+    },
+    {
+      label: "Coupons",
+      url: "coupons",
+    },
+  ],
+};
+
+const renderNavOptions = (menuOptions, currentPath) => {
+  return menuOptions.map((menu) => (
+    <li className="nav-item">
+      <NavLink
+        to={menu.url}
+        className={
+          `nav-link text-white` +
+          (currentPath.split("/")[1] === menu.url.toLowerCase()
+            ? " text-decoration-underline fw-bold"
+            : "")
+        }
+      >
+        {menu.label}
+      </NavLink>
+    </li>
+  ));
+};
 
 const Navbar = () => {
+  // const { user } = useCurrentUser();
+  const user = useSelector((state) => state.user.user);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+    <nav
+      className="navbar navbar-expand-lg navbar-dark bg-success shadow-sm"
+      style={{ fontFamily: "Segoe UI, Arial, sans-serif", color: "#fff" }}
+    >
       <div className="container-fluid">
-        <NavLink className="navbar-brand fw-bold fs-3 text-dark" to="/">
-         ServeEasy
+        <NavLink className="navbar-brand fw-bold fs-3 text-white" to="/">
+          ServeEasy
         </NavLink>
         <button
           className="navbar-toggler"
@@ -24,62 +86,90 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarNavDropdown">
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <NavLink to="/" className="nav-link text-dark" activeclassname="active" exact="true">
+              <NavLink
+                to="/"
+                className={
+                  `nav-link text-white` +
+                  (location.pathname === "/"
+                    ? " text-decoration-underline fw-bold"
+                    : "")
+                }
+                exact="true"
+              >
                 Home
               </NavLink>
             </li>
-            <li className="nav-item">
-              <NavLink to="/menu" className="nav-link text-dark" activeclassname="active">
-                Menu
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink to="/orders" className="nav-link text-dark" activeclassname="active">
-                Orders
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink to="/payments" className="nav-link text-dark" activeclassname="active">
-                Payments
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink to="/admin" className="nav-link text-dark" activeclassname="active">
-                Admin Panel
-              </NavLink>
-            </li>
+            {user && user.role
+              ? renderNavOptions(menuOptions[user.role.type], location.pathname)
+              : null}
 
-            <li className="nav-item dropdown">
-              <a
-                className="nav-link dropdown-toggle text-dark"
-                href="/#"
-                id="userDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                 Account
-              </a>
-              <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                <li>
-                  <NavLink className="dropdown-item" to="/profile">
-                   Profile
+            {user ? (
+              <>
+                <li className="nav-item dropdown">
+                  <a
+                    className="nav-link dropdown-toggle text-white"
+                    href="/#"
+                    id="userDropdown"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    Account
+                  </a>
+                  <ul
+                    className="dropdown-menu dropdown-menu-end"
+                    aria-labelledby="userDropdown"
+                  >
+                    <li>
+                      <NavLink className="dropdown-item" to="/profile">
+                        Profile
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink className="dropdown-item" to="/settings">
+                        Settings
+                      </NavLink>
+                    </li>
+                    <li>
+                      <hr className="dropdown-divider" />
+                    </li>
+                    <li>
+                      <button
+                        className="dropdown-item text-danger"
+                        onClick={() => {
+                          dispatch(setUser(null));
+                          sessionStorage.removeItem("token");
+                          navigate("/");
+                        }}
+                      >
+                        Logout
+                      </button>
+                    </li>
+                  </ul>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="nav-item">
+                  <NavLink
+                    to="/admin"
+                    className="nav-link text-white"
+                    activeclassname="active"
+                  >
+                    Caterer Login
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink className="dropdown-item" to="/settings">
-                   Settings
+                <li className="nav-item">
+                  <NavLink
+                    to="/login"
+                    className="nav-link text-white"
+                    activeclassname="active"
+                  >
+                    Customer Login
                   </NavLink>
                 </li>
-                <li><hr className="dropdown-divider" /></li>
-                <li>
-                  <NavLink className="dropdown-item text-danger" to="/logout">
-                    Logout
-                  </NavLink>
-                </li>
-              </ul>
-            </li>
-
+              </>
+            )}
           </ul>
         </div>
       </div>

@@ -46,87 +46,99 @@ function Login() {
     },
   });
   return (
-    <>
-      <div
-        className="d-flex w-100 justify-content-center align-items-center"
-        style={{ height: "70vh" }}
-      >
-        <div className="row w-100">
-          <div className="col-4"></div>
-          <div className="col-md-4">
-            <div className="container border border-3 rounded p-5 w-100">
-              <form onSubmit={formik.handleSubmit}>
-                <h1 className="display-6 text-center">Login</h1>
-                <hr />
-                <div className="mb-3">
-                  <label htmlFor="exampleInputEmail1" className="form-label">
-                    Email address
-                  </label>
-                  <input
-                    type="email"
-                    className={
-                      formik.touched.email && formik.errors.email
-                        ? "form-control is-invalid"
-                        : "form-control"
-                    }
-                    id="email"
-                    name="email"
-                    {...formik.getFieldProps("email")}
-                  />
-                  {formik.touched.email && formik.errors.email ? (
-                    <div className="invalid-feedback">
-                      {formik.errors.email}
-                    </div>
-                  ) : null}
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="exampleInputPassword1" className="form-label">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    className={
-                      formik.touched.password && formik.errors.password
-                        ? "form-control is-invalid"
-                        : "form-control"
-                    }
-                    id="password"
-                    name="password"
-                    {...formik.getFieldProps("password")}
-                  />
-                  {formik.touched.password && formik.errors.password ? (
-                    <div className="invalid-feedback">
-                      {formik.errors.password}
-                    </div>
-                  ) : null}
-                </div>
-                <div className="mb-3 form-check">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id="exampleCheck1"
-                  />
-                  <label className="form-check-label" htmlFor="exampleCheck1">
-                    Check me out
-                  </label>
-                </div>
-                <div className="d-flex justify-content-center mt-5">
-                  <button type="submit" className="btn btn-success w-100">
+    <div className="min-vh-100 d-flex align-items-center justify-content-center">
+      <div className="container">
+        <div className="row justify-content-center">
+          <div className="col-md-6 col-lg-5">
+            <div className="card shadow-lg border-0 rounded-4 p-4">
+              <div className="card-body">
+                <h1 className="text-center fw-bold mb-4 text-success-emphasis">
+                  Customer Login
+                </h1>
+                <form onSubmit={formik.handleSubmit}>
+                  <div className="mb-3">
+                    <label htmlFor="email" className="form-label fw-semibold">
+                      Email address
+                    </label>
+                    <input
+                      type="email"
+                      className={
+                        formik.touched.email && formik.errors.email
+                          ? "form-control is-invalid"
+                          : "form-control"
+                      }
+                      id="email"
+                      name="email"
+                      {...formik.getFieldProps("email")}
+                      autoComplete="username"
+                    />
+                    {formik.touched.email && formik.errors.email ? (
+                      <div className="invalid-feedback">
+                        {formik.errors.email}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="mb-3">
+                    <label
+                      htmlFor="password"
+                      className="form-label fw-semibold"
+                    >
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      className={
+                        formik.touched.password && formik.errors.password
+                          ? "form-control is-invalid"
+                          : "form-control"
+                      }
+                      id="password"
+                      name="password"
+                      {...formik.getFieldProps("password")}
+                      autoComplete="current-password"
+                    />
+                    {formik.touched.password && formik.errors.password ? (
+                      <div className="invalid-feedback">
+                        {formik.errors.password}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="mb-3 form-check">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="rememberMe"
+                    />
+                    <label className="form-check-label" htmlFor="rememberMe">
+                      Remember me
+                    </label>
+                  </div>
+                  <button
+                    type="submit"
+                    className="btn btn-success w-100 fw-bold shadow-sm"
+                  >
                     Login
                   </button>
-                </div>
-                <div className="d-flex justify-content-center mt-5">
-                  <div id="emailHelp" className="form-text">
-                    Don't have an account ? <a href="/register">SignUp.</a>
+                  <div className="text-center mt-4">
+                    <span className="text-muted">
+                      Don't have an account?{" "}
+                      <a href="/register" className="text-success fw-semibold">
+                        Sign Up
+                      </a>
+                    </span>
                   </div>
-                </div>
-              </form>
+                </form>
+              </div>
+            </div>
+            <div className="text-center mt-3">
+              <a href="/" className="btn btn-link text-white fw-bold">
+                ← Back to Home
+              </a>
             </div>
           </div>
-          <div className="col-4"></div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
