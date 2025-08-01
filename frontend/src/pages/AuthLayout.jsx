@@ -32,7 +32,7 @@ function AuthLayout() {
   }, []);
   return (
     <>
-      <div className="row">
+      {/* <div className="row">
         <div className="col-2">
           <Menubar />
         </div>
@@ -40,11 +40,11 @@ function AuthLayout() {
           <div
             className="d-flex justify-content-center w-100 align-items-center"
             style={{ height: "70vh" }}
-          >
-            <Outlet />
-          </div>
+          > */}
+      <Outlet />
+      {/* </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }

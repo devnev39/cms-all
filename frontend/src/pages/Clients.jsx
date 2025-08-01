@@ -24,7 +24,7 @@ function Clients() {
   const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
-    if (!users) {
+    if (!users || users.length === 0) {
       const token = sessionStorage.getItem("token");
       if (token) {
         getAllUsers(token)
@@ -78,7 +78,7 @@ function Clients() {
       email: "",
       password: "",
       mobile: "",
-      roleId: 4,
+      roleId: 2,
     },
     validationSchema: yup.object({
       name: yup.string().required("Name required !"),
@@ -128,10 +128,10 @@ function Clients() {
 
   return (
     <div className="container">
-      <h2 className="mb-4 text-center">Clients</h2>
-      <div className="table-responsive">
-        <table className="table table-striped table-bordered rounded">
-          <thead className="table-primary">
+      <div className="mb-4 mt-5 display-6 text-white">Clients</div>
+      <div className="table-responsive rounded border p-2 shadow bg-white">
+        <table className="table table-striped table-bordered table-hover">
+          <thead>
             <tr>
               <th>ID</th>
               <th>Name</th>
@@ -156,7 +156,7 @@ function Clients() {
                   </td>
                   <td>
                     <button
-                      className="btn btn-sm btn-primary me-2"
+                      className="btn btn-sm btn-outline-primary me-2"
                       onClick={() => {
                         setSelectedUser(user);
                         setShowUpdateModal(true);
@@ -165,7 +165,7 @@ function Clients() {
                       <FaEdit />
                     </button>
                     <button
-                      className="btn btn-sm btn-danger"
+                      className="btn btn-sm btn-outline-danger"
                       onClick={() => handleDelete(user.id)}
                     >
                       <FaTrash />
