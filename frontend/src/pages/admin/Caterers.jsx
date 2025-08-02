@@ -134,7 +134,7 @@ function Caterers() {
 
   return (
     <div className="container">
-      <div className="mb-4 mt-5 display-6 text-white">Caterers</div>
+      <div className="py-4 display-6 text-white">Caterers</div>
       <div className="table-responsive rounded border p-2 shadow bg-white">
         <table className="table table-striped table-bordered table-hover">
           <thead>
