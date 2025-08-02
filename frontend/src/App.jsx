@@ -1,30 +1,44 @@
 import { BrowserRouter, Route, Routes } from "react-router";
-import Layout from "./Components/Layout";
 import Landing from "./pages/Home/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-
-import AdminDashboard from "./pages/Dashboard/AdminDashboard";
-import ClientDashboard from "./pages/Dashboard/ClientDashboard";
-import CustomerDashboard from "./pages/Dashboard/CustomerDashboard";
+import { ToastContainer } from "react-toastify";
+import AuthLayout from "./pages/AuthLayout";
+import Dashboard from "./pages/dashboard/Dashboard";
+import Clients from "./pages/admin/Clients";
+import Caterers from "./pages/admin/Caterers";
+import Items from "./pages/client/Items";
+import CouponTypes from "./pages/client/CouponTypes";
+import Coupons from "./pages/client/Coupons";
+import BackgroundLayout from "./components/BackgroundLayout";
+import NavbarLayout from "./components/NavbarLayout";
+import UserLayout from "./components/UserLayout";
+import Menu from "./pages/menu/Menu";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Shared Layout with Navbar */}
-        <Route path="/" element={<Layout />}>
-          {/* This will be rendered at "/" */}
-          <Route index element={<Landing />} />
-
-          {/* Other nested pages */}
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-          <Route path="admin" element={<AdminDashboard />} />
-          <Route path="staff" element={<ClientDashboard />} />
-          <Route path="customer" element={<CustomerDashboard />} />
+        <Route element={<UserLayout />}>
+          <Route element={<NavbarLayout />}>
+            <Route element={<BackgroundLayout />}>
+              <Route path="/" element={<Landing />} />
+              <Route path="login" element={<Login />} />
+              <Route path="register" element={<Register />} />
+              <Route path="menu" element={<Menu />} />
+              <Route element={<AuthLayout />}>
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="clients" element={<Clients />} />
+                <Route path="caterers" element={<Caterers />} />
+                <Route path="items" element={<Items />} />
+                <Route path="coupontypes" element={<CouponTypes />} />
+                <Route path="coupons" element={<Coupons />} />
+              </Route>
+            </Route>
+          </Route>
         </Route>
       </Routes>
+      <ToastContainer autoClose={3000} closeButton />
     </BrowserRouter>
   );
 }

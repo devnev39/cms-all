@@ -5,7 +5,6 @@ import java.util.Base64;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,7 +30,7 @@ import com.cms.cms.utils.JwtService;
 import lombok.AllArgsConstructor;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:5173"})
+@CrossOrigin(origins = { "*" })
 @RequestMapping("/auth")
 @AllArgsConstructor
 public class AuthController {

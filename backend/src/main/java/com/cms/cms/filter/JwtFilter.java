@@ -3,6 +3,7 @@ package com.cms.cms.filter;
 import java.io.IOException;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -48,7 +49,11 @@ public class JwtFilter extends OncePerRequestFilter {
             // set security context
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            // To avoid race conditions across multiple threads use SecurityContextHolder.createEmptyContext to create empty context
+            // set that context to SecurityContextHolder.setContext
+            SecurityContext context = SecurityContextHolder.createEmptyContext();
+            context.setAuthentication(auth);
+            SecurityContextHolder.setContext(context);
         }
 
         filterChain.doFilter(request, response);
