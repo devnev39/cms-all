@@ -1,5 +1,7 @@
+import React from "react";
 
-
-export default function CustomerDashboard () {
-    
+function CustomerDashboard() {
+  return <div>CustomerDashboard</div>;
 }
+
+export default CustomerDashboard;
