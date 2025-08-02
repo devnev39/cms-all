@@ -17,11 +17,9 @@ function AuthLayout() {
     if (token) {
       getCurrentUser(token)
         .then((resp) => {
-          console.log(resp);
           dispatch(setUser(resp.data));
         })
         .catch((err) => {
-          console.log(err);
           toast.error(err?.response?.data?.message);
           sessionStorage.removeItem("token");
           navigate("/login");

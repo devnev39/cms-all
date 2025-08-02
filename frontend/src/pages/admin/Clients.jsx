@@ -4,13 +4,13 @@ import {
   setUsers,
   updateUser as updateUserRedux,
   removeUser,
-} from "../features/user/userSlice";
+} from "../../features/user/userSlice";
 import {
   getAllUsers,
   updateUser as updateUserService,
   deleteUser,
   createUser,
-} from "../services/user/user";
+} from "../../services/user/user";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "react-toastify";

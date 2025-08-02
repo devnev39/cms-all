@@ -53,7 +53,7 @@ function Login() {
             <div className="card shadow-lg border-0 rounded-4 p-4">
               <div className="card-body">
                 <h1 className="text-center fw-bold mb-4 text-success-emphasis">
-                  Customer Login
+                  Login
                 </h1>
                 <form onSubmit={formik.handleSubmit}>
                   <div className="mb-3">

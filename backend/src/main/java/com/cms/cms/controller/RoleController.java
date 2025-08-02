@@ -22,7 +22,7 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/role")
-@CrossOrigin(origins = {"http://localhost:5173"})
+@CrossOrigin(origins = { "*" })
 @AllArgsConstructor
 public class RoleController {
 

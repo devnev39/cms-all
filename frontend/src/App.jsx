@@ -4,15 +4,16 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { ToastContainer } from "react-toastify";
 import AuthLayout from "./pages/AuthLayout";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import Clients from "./pages/Clients";
-import Caterers from "./pages/Caterers";
-import Items from "./pages/Items";
-import CouponTypes from "./pages/CouponTypes";
-import Coupons from "./pages/Coupons";
+import Dashboard from "./pages/dashboard/Dashboard";
+import Clients from "./pages/admin/Clients";
+import Caterers from "./pages/admin/Caterers";
+import Items from "./pages/client/Items";
+import CouponTypes from "./pages/client/CouponTypes";
+import Coupons from "./pages/client/Coupons";
 import BackgroundLayout from "./components/BackgroundLayout";
 import NavbarLayout from "./components/NavbarLayout";
 import UserLayout from "./components/UserLayout";
+import Menu from "./pages/menu/Menu";
 
 function App() {
   return (
@@ -22,8 +23,9 @@ function App() {
           <Route element={<NavbarLayout />}>
             <Route element={<BackgroundLayout />}>
               <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+              <Route path="login" element={<Login />} />
+              <Route path="register" element={<Register />} />
+              <Route path="menu" element={<Menu />} />
               <Route element={<AuthLayout />}>
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="clients" element={<Clients />} />
