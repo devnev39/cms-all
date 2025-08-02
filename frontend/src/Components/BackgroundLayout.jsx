@@ -11,7 +11,6 @@ function BackgroundLayout() {
           backgroundRepeat: "repeat-y",
           backgroundAttachment: "fixed",
           minHeight: "100vh",
-          position: "fixed",
           width: "100vw",
         }}
       >

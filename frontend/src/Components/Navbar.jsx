@@ -51,7 +51,6 @@ const navbarItems = [
 ];
 
 const renderNavOptions = (menuOptions, currentPath) => {
-  console.log(menuOptions, currentPath);
   return menuOptions.map((menu) => (
     <li className="nav-item">
       <NavLink
