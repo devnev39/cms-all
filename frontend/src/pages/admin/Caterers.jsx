@@ -5,13 +5,13 @@ import {
   removeCaterer,
   addCaterer,
   setCaterers,
-} from "../features/user/catererSlice";
+} from "../../features/user/catererSlice";
 import {
   createCaterer,
   updateCaterer as updateCatererService,
   deleteCaterer,
   getAllCaterers,
-} from "../services/user/caterer";
+} from "../../services/user/caterer";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "react-toastify";

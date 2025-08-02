@@ -30,7 +30,7 @@ import com.cms.cms.utils.JwtService;
 import lombok.AllArgsConstructor;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:5173"})
+@CrossOrigin(origins = { "*" })
 @RequestMapping("/auth")
 @AllArgsConstructor
 public class AuthController {

@@ -39,7 +39,19 @@ const menuOptions = {
   ],
 };
 
+const navbarItems = [
+  {
+    label: "Menu",
+    url: "menu",
+  },
+  {
+    label: "Login",
+    url: "login",
+  },
+];
+
 const renderNavOptions = (menuOptions, currentPath) => {
+  console.log(menuOptions, currentPath);
   return menuOptions.map((menu) => (
     <li className="nav-item">
       <NavLink
@@ -58,7 +70,6 @@ const renderNavOptions = (menuOptions, currentPath) => {
 };
 
 const Navbar = () => {
-  // const { user } = useCurrentUser();
   const user = useSelector((state) => state.user.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -149,26 +160,7 @@ const Navbar = () => {
                 </li>
               </>
             ) : (
-              <>
-                <li className="nav-item">
-                  <NavLink
-                    to="/admin"
-                    className="nav-link text-white"
-                    activeclassname="active"
-                  >
-                    Caterer Login
-                  </NavLink>
-                </li>
-                <li className="nav-item">
-                  <NavLink
-                    to="/login"
-                    className="nav-link text-white"
-                    activeclassname="active"
-                  >
-                    Customer Login
-                  </NavLink>
-                </li>
-              </>
+              <>{renderNavOptions(navbarItems, location.pathname)}</>
             )}
           </ul>
         </div>
