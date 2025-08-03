@@ -31,6 +31,10 @@ public class CatererService {
         return repo.findAll();
     }
 
+    public Caterer getCatererByClientId(Long clientId) {
+        return repo.findByUserId(clientId).orElseThrow(() -> new CustomEntityNotFoundException("Caterer for client with id: " + clientId));
+    }
+
     public Caterer getCaterer(Long id) {
         Optional<Caterer> caterer = repo.findById(id);
         if (!caterer.isPresent()) throw new CustomEntityNotFoundException("caterer");

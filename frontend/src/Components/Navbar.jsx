@@ -52,7 +52,7 @@ const navbarItems = [
 
 const renderNavOptions = (menuOptions, currentPath) => {
   return menuOptions.map((menu) => (
-    <li className="nav-item">
+    <li className="nav-item" key={menu.url}>
       <NavLink
         to={menu.url}
         className={
