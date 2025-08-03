@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.cms.cms.exception.CustomEntityNotFoundException;
@@ -40,14 +41,22 @@ public class ExceptionFilter extends OncePerRequestFilter {
             response.setStatus(401);
             response.getWriter().write(convertObjectToJson(mp)); 
         }
-        catch (Exception ex) {
-            System.out.println("Exception occured !");
-            ex.printStackTrace();
-            mp.put("error", "Internal server error");
-            mp.put("detail", ex.getMessage());
-            response.setStatus(500);
-            response.getWriter().write(convertObjectToJson(mp));
-        }
+        // catch (HttpClientErrorException ex) {
+        //     System.out.println("Exception occured !");
+        //     ex.printStackTrace();
+        //     mp.put("error", "Client Error");
+        //     mp.put("detail", ex.getLocalizedMessage());
+        //     response.setStatus(ex.getStatusCode().value());
+        //     response.getWriter().write(convertObjectToJson(mp));
+        // }
+        // catch (Exception ex) {
+        //     System.out.println("Exception occured !");
+        //     ex.printStackTrace();
+        //     mp.put("error", "Internal server error");
+        //     mp.put("detail", ex.getMessage());
+        //     response.setStatus(500);
+        //     response.getWriter().write(convertObjectToJson(mp));
+        // }
     }
 
     public String convertObjectToJson(Object obj) throws JsonProcessingException {

@@ -2,19 +2,26 @@ import React, { useEffect } from "react";
 import { getCurrentUser } from "../services/user/user";
 import { toast } from "react-toastify";
 import { Outlet, useNavigate } from "react-router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../features/user/userSlice";
 import Menubar from "../Components/Menubar";
 
 function AuthLayout() {
+  const user = useSelector((state) => state.user.user);
   const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   if (!user) {
+  //     navigate("/login");
+  //   }
+  // }, []);
   const dispatch = useDispatch();
   useEffect(() => {
     // Get the token
     const token = sessionStorage.getItem("token");
 
     // Fetch the current user
-    if (token) {
+    if (token && !user) {
       getCurrentUser(token)
         .then((resp) => {
           dispatch(setUser(resp.data));
@@ -24,7 +31,7 @@ function AuthLayout() {
           sessionStorage.removeItem("token");
           navigate("/login");
         });
-    } else {
+    } else if (!token) {
       navigate("/login");
     }
   }, []);

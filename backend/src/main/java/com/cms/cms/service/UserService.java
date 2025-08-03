@@ -14,6 +14,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import com.cms.cms.exception.CustomEntityNotFoundException;
 import com.cms.cms.models.common.Roles;
 import com.cms.cms.models.dto.User.NewUserDTO;
+import com.cms.cms.models.dto.User.PasswordResetDTO;
 import com.cms.cms.models.dto.User.UserDTO;
 import com.cms.cms.models.entity.Role;
 import com.cms.cms.models.entity.User;
@@ -104,6 +105,18 @@ public class UserService {
 			present_user.setUpdatedBy(("#user"));
 			return repo.save(present_user);
 		}
+	}
+
+	public User resetPassword(PasswordResetDTO entity) {
+		User u = repo.findById(entity.getId())
+				.orElseThrow(() -> new CustomEntityNotFoundException("User"));
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		if (encoder.matches(entity.getOldPassword(), u.getPassword()) == false)
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Old password is incorrect");
+		u.setPassword(encoder.encode(entity.getNewPassword()));
+		u.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+		u.setUpdatedBy(CurrentUser.getCurrentUser().getEmail());
+		return repo.save(u);
 	}
 
 	public boolean deleteUser(Long id) {

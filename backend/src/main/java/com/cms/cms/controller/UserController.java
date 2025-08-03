@@ -2,6 +2,8 @@ package com.cms.cms.controller;
 
 import java.util.List;
 
+import javax.naming.Binding;
+
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +19,7 @@ import com.cms.cms.exception.CustomEntityNotFoundException;
 import com.cms.cms.exception.InvalidInputException;
 import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.dto.User.NewUserDTO;
+import com.cms.cms.models.dto.User.PasswordResetDTO;
 import com.cms.cms.models.dto.User.UserDTO;
 import com.cms.cms.models.entity.User;
 import com.cms.cms.service.UserService;
@@ -67,8 +70,21 @@ public class UserController {
     public User updateUser(@PathVariable Long id, @RequestBody UserDTO user) {
         // If user is admin, allow cross updates
         // Otherwise only allow updates to current user
-        return userService.updateUser(id, user);
+        User u = userService.updateUser(id, user);
+        u.setPassword(null); 
+        return u;
     }
+
+    @PostMapping("/reset-password")
+    public User resetPassword(@Valid @RequestBody PasswordResetDTO entity, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new InvalidInputException("Password Reset", result);
+        }
+        User u = userService.resetPassword(entity);
+        u.setPassword(null); // Do not return password
+        return u;
+    }
+    
 
     @DeleteMapping("/{id}")
     public OperationResponse deleteUser(@PathVariable Long id) {

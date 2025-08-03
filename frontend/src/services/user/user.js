@@ -29,6 +29,18 @@ export function updateUser(userId, userData, token) {
   });
 }
 
+export function resetPassword(userId, passwordData, token) {
+  return axios.post(
+    `${config.base_url}/user/reset-password`,
+    { id: userId, ...passwordData },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+}
+
 export function deleteUser(userId, token) {
   return axios.delete(`${config.base_url}/user/${userId}`, {
     headers: {

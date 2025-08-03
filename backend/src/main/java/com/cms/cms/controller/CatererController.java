@@ -3,6 +3,7 @@ package com.cms.cms.controller;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.cms.exception.InvalidInputException;
 import com.cms.cms.models.common.OperationResponse;
+import com.cms.cms.models.common.Roles;
 import com.cms.cms.models.dto.Caterer.CatererDTO;
 import com.cms.cms.models.dto.Caterer.NewCatererDTO;
 import com.cms.cms.models.entity.Caterer;
 import com.cms.cms.service.CatererService;
+import com.cms.cms.utils.CurrentUser;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -33,7 +36,12 @@ public class CatererController {
 
     @GetMapping("")
     public List<Caterer> getAllCaterers() {
-        return catererService.getAllCaterers();
+        if (CurrentUser.hasRole(Roles.ROLE_ADMIN)) {
+            return catererService.getAllCaterers();
+        } else if (CurrentUser.hasRole(Roles.ROLE_CLNT)) {
+            return List.of(catererService.getCatererByClientId(CurrentUser.getCurrentUserId()));
+        } 
+        throw new AuthorizationDeniedException("Customers are not allowed to access caterers.");
     }
 
     @GetMapping("/{id}")
@@ -43,6 +51,7 @@ public class CatererController {
 
     @PostMapping("")
     public Caterer createCaterer(@Valid @RequestBody NewCatererDTO caterer, BindingResult result) {
+        if (!CurrentUser.hasRole(Roles.ROLE_ADMIN)) throw new AuthorizationDeniedException("Only admins can create caterers.");
     	if(result.hasErrors()) {
     		throw new InvalidInputException("Caterer", result);
     	}
@@ -51,6 +60,9 @@ public class CatererController {
 
     @PatchMapping("/{id}")
     public Caterer updateCaterer(@PathVariable Long id, @RequestBody CatererDTO caterer) {
+        if (!CurrentUser.hasRole(Roles.ROLE_ADMIN) || !CurrentUser.hasRole(Roles.ROLE_CLNT)) {
+            throw new AuthorizationDeniedException("Only admins or clients can update caterers.");
+        }
        return catererService.updateCaterer(id, caterer);
     }
 
