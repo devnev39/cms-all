@@ -1,10 +1,10 @@
 import axios from "axios";
 import config from "../../config/config";
 
-export function getAllItems(token) {
-  return axios.get(`${config.base_url}/item`, {
+export function getAllItems(catererId, token) {
+  return axios.get(`${config.base_url}/item/caterer/${catererId}`, {
     headers: {
-      Authorization: `Beaerer ${token}`,
+      Authorization: `Bearer ${token}`, 
     },
   });
 }
