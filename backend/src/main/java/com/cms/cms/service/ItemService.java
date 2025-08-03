@@ -13,6 +13,7 @@ import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.dto.Item.ItemDTO;
 import com.cms.cms.models.dto.Item.NewItemDTO;
 import com.cms.cms.models.entity.Item;
+import com.cms.cms.repository.CatererRepository;
 import com.cms.cms.repository.ItemRepository;
 import com.cms.cms.utils.CurrentUser;
 
@@ -24,7 +25,8 @@ import lombok.AllArgsConstructor;
 public class ItemService {
 	private ItemRepository repo;
 	private final ModelMapper mapper;
-	
+	private final CatererRepository catererRepo;
+
     public List<Item> getAllItems() {
         return repo.findAll();
     }
@@ -68,5 +70,19 @@ public class ItemService {
     public OperationResponse deleteItem(Long id) {
         repo.deleteById(id);
         return new OperationResponse("Item deleted succssfully !");
+    }
+
+
+    public List<Item> getItemsByCatererId(Long catererId) {
+        // check if catererId is valid 
+        if (catererId == null || catererId <= 0) {
+            throw new IllegalArgumentException("Invalid Caterer ID");
+        }
+        // check catererId exists
+        if (!catererRepo.existsById(catererId)) {
+            throw new CustomEntityNotFoundException("Caterer with ID: " + catererId);
+        }
+        List<Item> items = repo.findByCatererId(catererId);
+        return items;
     }
 }
