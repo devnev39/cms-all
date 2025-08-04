@@ -12,6 +12,7 @@ import com.cms.cms.exception.CustomEntityNotFoundException;
 import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.dto.Item.ItemDTO;
 import com.cms.cms.models.dto.Item.NewItemDTO;
+import com.cms.cms.models.entity.Caterer;
 import com.cms.cms.models.entity.Item;
 import com.cms.cms.repository.CatererRepository;
 import com.cms.cms.repository.ItemRepository;
@@ -40,7 +41,13 @@ public class ItemService {
 
     
     public Item createItem( NewItemDTO item) {
-    	Item newItem = mapper.map(item, Item.class);
+    	System.out.println("In Create Item Service Method ");
+//    	Item newItem = mapper.map(item, Item.class);
+    	Item newItem=new Item();
+    	newItem.setName(item.getName());
+    	newItem.setPrice(item.getPrice());
+    	Caterer c1=catererRepo.findById(item.getCatererId()).orElseThrow(()-> new CustomEntityNotFoundException("Caterer"));
+    	newItem.setCaterer(c1);
     	newItem.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
         return repo.save(newItem);
     }
