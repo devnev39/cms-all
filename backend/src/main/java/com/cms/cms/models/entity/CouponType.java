@@ -22,7 +22,7 @@ public class CouponType extends Commons{
    @ManyToOne
    private Caterer caterer;
 
-   @Column(columnDefinition = "char(5)")
+   @Column(columnDefinition = "char(20)")
    private String type;
 
    private int minCount;
