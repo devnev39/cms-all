@@ -50,6 +50,7 @@ public class ItemController {
 
     @PostMapping("")
     public Item createItem(@Valid @RequestBody NewItemDTO item,BindingResult result) {
+    	 System.out.println("Received item: " + item);
     	 if (result.hasErrors()) {
              throw new InvalidInputException("Item", result);
          }
