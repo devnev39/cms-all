@@ -4,7 +4,8 @@ import {
   getAllItems,
   deleteItem,
   updateItem,
-  createItem
+  createItem,
+  getCatererId
 } from '../../services/user/items';
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import { toast } from 'react-toastify';
@@ -19,25 +20,49 @@ const Items = () => {
   const [showModal, setShowModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [formData, setFormData] = useState({ name: '', price: '' });
-
   const token = sessionStorage.getItem('token');
   const dispatch = useDispatch();
   const user = useSelector(state => state.user?.user);
-  const catererId = user?.id;
+
+  
+  const userId = user?.id;
+  // find catererId from userId
+  const [catererId, setCatererId] = useState(null);
+  useEffect(() => { 
+    if (userId && token) {
+      getCatererId(userId, token) 
+        .then(res => {
+          console.log("res :", res.data);
+          setCatererId(res.data.id);
+          console.log("Caterer ID:", res.data.id);
+        })  
+        .catch(err => {
+          console.error("Failed to fetch caterer ID:", err);  
+          toast.error('Failed to fetch caterer ID');
+        }); 
+    }
+  }, [userId]);
+
+  
+
   const items = useSelector(state => state.item?.items || []);
   const selectedItem = useSelector(state => state.item?.item);
 
-  const fetchItems = () => {
-    getAllItems(catererId, token)
-      .then(res => {
-        const filtered = res.data.filter(item => item.catererId === catererId);
-        dispatch(setItems(filtered));
-      })
-      .catch(err => {
-        toast.error('Failed to fetch items');
-        console.error(err);
-      });
-  };
+const fetchItems = () => {
+  getAllItems(catererId, token)
+    .then(res => {
+      console.log("Fetched items:", res.data);
+      const filtered = res.data.filter(item => item.caterer?.id === catererId);
+      console.log("Filtered items:", filtered);
+      dispatch(setItems(filtered));
+      console.log("Items set in Redux:", items);
+    })
+    .catch(err => {
+      toast.error('Failed to fetch items');
+      console.error(err);
+    });
+};
+
 
   useEffect(() => {
     if (token && catererId) {
@@ -53,7 +78,7 @@ const Items = () => {
   const handleCreate = () => {
     if (!formData.name || !formData.price) return toast.error('All fields required');
     const newItem = { ...formData, catererId };
-    createItem(catererId, newItem, token)
+    createItem( newItem, token)
       .then(() => {
         toast.success('Item created');
         setShowModal(false);
