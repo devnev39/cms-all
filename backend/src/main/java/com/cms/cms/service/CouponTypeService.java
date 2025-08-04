@@ -49,13 +49,21 @@ public class CouponTypeService {
        // Check if caterer exist
         if (result.hasErrors()) {
             throw new InvalidInputException("CouponType", result);
-        }
+        }else {
         Caterer caterer = catererRepo.findById(type.getCatererId()).orElseThrow(() -> new CustomEntityNotFoundException("Caterer"));
-        CouponType ct = mapper.map(type, CouponType.class);
+//        CouponType ct = mapper.map(type, CouponType.class);
+        CouponType ct=new CouponType();
+        ct.setMinCount(type.getMinCount());
+        ct.setDiscountPerCoupon(type.getDiscountPerCoupon());
+        ct.setType(type.getType());
+        ct.setOriginalPrice(type.getOriginalPrice());
         ct.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
         ct.setCaterer(caterer);
-        ct.setId(null);
-        return couponTypeRespository.save(ct);
+//        ct.setId(null);
+        CouponType c1= couponTypeRespository.save(ct);
+        System.out.println(c1.getMinCount() +"**********");
+        return c1;
+        }
     }
 
 
