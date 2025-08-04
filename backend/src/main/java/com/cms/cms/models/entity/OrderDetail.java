@@ -21,9 +21,9 @@ public class OrderDetail extends Commons{
     @ManyToOne
     private Order order;
 
-    @ManyToOne
-    private Item item;
-    
+    private String itemName;
+    private double itemPrice;
+    private String catererName;
     private int quantity;
     private double pricePerUnit;
 }

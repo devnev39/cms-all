@@ -1,5 +1,6 @@
 ```mermaid
 erDiagram
+    erDiagram
     user {
         int id pk
         int role_id fk
@@ -47,9 +48,12 @@ erDiagram
 
     coupon {
         int id pk
-        int coupon_type_id fk
         int customer_id fk
         int count
+        char(5) coupon_type
+        int coupon_type_min_count
+        float coupon_type_original_price
+        float coupon_type_discount_per_coupon
         datetime validity
         datetime created_at
         datetime updated_at
@@ -60,22 +64,22 @@ erDiagram
     orders {
         int id pk
         int caterer_id fk
-        int user_id fk
-        %% int item_id fk
+        int customer_id fk
         datetime created_at
         float total_amount
-        char(50) razorpay_payment_id
-        char(50) razorpay_order_id
-        char(50) razorpay_signature
         char(5) payment_method
+        varchar(50) razorpay_order_id
+        varchar(50) razorpay_payment_id
     }
 
     order_details {
         int id pk
-        int item_id fk
         int order_id fk
         int quantity
         float price_per_unit "Can be used in case of discounts"
+        varchar(50) caterer_name
+        varchar(50) item_name
+        float item_price
     }
 
     coupon_usage {
@@ -88,13 +92,17 @@ erDiagram
 
     user ||--|| role: "has one"
     user }o--|| caterer: "Many user can be associated with one caterer"
-    item }o--|| user : "Caterer manages items"
+
     item }o--|| caterer: "Caterer's items"
+
     orders }o--|| caterer: "Orders of specific caterer"
-    coupon }o--|| user: "Caterer manages coupons"
     orders }o--|| user: "Customer places orders"
+
+    coupon }o--|| caterer: "Caterer manages coupons"
+
     order_details }o--|| orders: "Details about different items and quantity"
-    coupon }o--|| coupon_types: "Each coupon has a coupon type"
+
     coupon_types }o--|| caterer: "Each caterer will have multiple coupon types"
+    
     coupon_usage }o--|| coupon: "Each coupon use tracked"
 ```

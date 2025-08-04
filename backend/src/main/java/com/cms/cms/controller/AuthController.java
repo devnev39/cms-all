@@ -79,7 +79,7 @@ public class AuthController {
         try {
             Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(body.getEmail(), body.getPassword())
-        );
+            );
 
             if (auth.isAuthenticated()) {
                 UserPrincipal user = (UserPrincipal) auth.getPrincipal();
