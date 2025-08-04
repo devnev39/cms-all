@@ -1,5 +1,4 @@
 ```mermaid
-erDiagram
     erDiagram
     user {
         int id pk
