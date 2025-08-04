@@ -36,6 +36,11 @@ public class ItemController {
         return itemService.getAllItems();
     }
 
+    @GetMapping("/caterer/{catererId}")
+    public List<Item> getItemsByCatererId(@PathVariable Long catererId) {
+        return itemService.getItemsByCatererId(catererId);
+    }
+
     @GetMapping("/{id}")
     public Item getItemById(@PathVariable Long id) {
         Item  item =itemService.getItemById(id);
