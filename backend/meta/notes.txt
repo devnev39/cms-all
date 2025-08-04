@@ -1,0 +1,12 @@
+1.  Catering client can edit
+    - Item 
+    - Coupon Type
+
+    When objects which are maintaining history are made which needs to store the state of the object at the time of transaction
+    we need to store the dependency object state as it is in that dependable object.
+
+    Like when placing order - the item state should be saved in the order object. So in order_details table there should be columns
+    which will hold item info also. Like name, price, caterer name.
+
+    Also while purchasing a coupon, we have to save the coupon type state into coupon table. So in coupon table we can add columns to
+    store the current state of coupontype on which transaction is agreed.

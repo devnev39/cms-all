@@ -21,7 +21,10 @@ public class Order extends Commons {
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
 
     @ManyToOne
-    private User user;
+    private User customer;
+
+    @ManyToOne
+    private Caterer caterer;
 
     private double totalAmount;
     private String razorpayPaymentId;

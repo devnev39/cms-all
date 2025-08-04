@@ -47,8 +47,11 @@ public class CouponService {
         CouponType ct = couponTypeRepo.findById(coupon.getCouponTypeId()).orElseThrow(() -> new CustomEntityNotFoundException("Coupon Type"));
         Coupon c = mapper.map(coupon, Coupon.class);
 
-        c.setUser(u);
-        c.setCouponType(ct);
+        c.setCustomer(u);
+        c.setCouponType(ct.getType()); 
+        c.setCouponTypeMinCount(ct.getMinCount());
+        c.setCouponTypeOriginalPrice(ct.getOriginalPrice());
+        c.setCouponTypeDiscountPerCoupon(ct.getDiscountPerCoupon());
         c.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
 
         return repo.save(c);
@@ -64,14 +67,14 @@ public class CouponService {
             if (dto.getValidity().isPresent()) {
                 current.setValidity(dto.getValidity().get());
             }
-            if (dto.getUserId().isPresent()) {
-                User u = userRepo.findById(dto.getUserId().get()).orElseThrow(() -> new CustomEntityNotFoundException("User"));
-                current.setUser(u);
+            if (dto.getCustomerId().isPresent()) {
+                User u = userRepo.findById(dto.getCustomerId().get()).orElseThrow(() -> new CustomEntityNotFoundException("User"));
+                current.setCustomer(u);
             }
-            if (dto.getCouponTypeId().isPresent()) {
-                CouponType ct = couponTypeRepo.findById(dto.getCouponTypeId().get()).orElseThrow(() -> new CustomEntityNotFoundException("Coupon Type"));
-                current.setCouponType(ct);
-            }
+            // if (dto.getCouponTypeId().isPresent()) {
+            //     CouponType ct = couponTypeRepo.findById(dto.getCouponTypeId().get()).orElseThrow(() -> new CustomEntityNotFoundException("Coupon Type"));
+            //     current.setCouponType(ct);
+            // }
             current.setUpdatedBy(CurrentUser.getCurrentUser().getEmail());
             current.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 

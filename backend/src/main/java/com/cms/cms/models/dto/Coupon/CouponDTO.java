@@ -8,13 +8,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// This DTO is used to update a coupon
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class CouponDTO {
-    private Optional<Long> couponTypeId = Optional.empty();
-    private Optional<Long> userId = Optional.empty();
+    private Optional<Long> customerId = Optional.empty();
     private Optional<Integer> count = Optional.empty();
     private Optional<Timestamp> validity = Optional.empty(); 
 }

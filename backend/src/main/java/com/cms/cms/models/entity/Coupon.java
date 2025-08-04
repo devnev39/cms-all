@@ -2,6 +2,7 @@ package com.cms.cms.models.entity;
 
 import java.sql.Timestamp;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,11 +22,21 @@ public class Coupon extends Commons {
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
 
     @ManyToOne
-    private CouponType couponType;
+    private User customer;
 
     @ManyToOne
-    private User user;
+    private Caterer caterer;
+    
+    @Column(columnDefinition = "char(5)")
+    private String couponType;
+
+    private int couponTypeMinCount;
+
+    private double couponTypeOriginalPrice;
+
+    private double couponTypeDiscountPerCoupon;
     
     private int count;
+
     private Timestamp validity;
 }
