@@ -7,14 +7,14 @@
 //   console.log("****************************************");
 //   return axios.get(`${config.base_url}/item/caterer/${catererId}`, {
 //     headers: {
-//       Authorization: `Bearer ${token}`, 
+//       Authorization: `Bearer ${token}`,
 //     },
 //   });
 // }
 
 // export function createItem(item, token) {
 //   console.log("Creating item:", item);
-//   console.log("Using token:", token); 
+//   console.log("Using token:", token);
 //   console.log("****************************************");
 //   return axios.post(`${config.base_url}/item`, item, {
 //     headers: {
@@ -46,12 +46,6 @@
 //   });
 // }
 
-
-
-
-
-
-
 import axios from "axios";
 import config from "../../config/config";
 
@@ -61,15 +55,12 @@ export function getAllItems(catererId, token) {
   console.log("****************************************");
   return axios.get(`${config.base_url}/item/caterer/${catererId}`, {
     headers: {
-      Authorization: `Bearer ${token}`, 
+      Authorization: `Bearer ${token}`,
     },
   });
 }
 
 export function createItem(item, token) {
-  console.log("Creating item:", item);
-  console.log("Using token:", token); 
-  console.log("****************************************");
   return axios.post(`${config.base_url}/item`, item, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -77,16 +68,8 @@ export function createItem(item, token) {
   });
 }
 
-export function getCatererId(userId, token) {
-  return axios.get(`${config.base_url}/caterer/user/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-}
-
 export function updateItem(item, token) {
-  return axios.patch(`${config.base_url}/item/${item.id}`, item, {
+  return axios.patch(`${config.base_url}/item/${item.get("id")}`, item, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -100,4 +83,3 @@ export function deleteItem(itemId, token) {
     },
   });
 }
-

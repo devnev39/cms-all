@@ -58,12 +58,23 @@ public class ItemService {
         if (!item.isPresent()) throw new CustomEntityNotFoundException("Item");
         else {
             Item current = item.get();
+            
+            // map the fields from dto having optional to current item with model mapper
+
             if (dto.getName().isPresent()) {
                 current.setName(dto.getName().get());
             }
-
             if (dto.getPrice().isPresent()) {
                 current.setPrice(dto.getPrice().get());
+            }
+            if (dto.getImagePath().isPresent()) {
+                current.setImagePath(dto.getImagePath().get());
+            }
+            if (dto.getImageUri().isPresent()) {    
+                current.setImageUri(dto.getImageUri().get());
+            }
+            if (dto.getIsAvailable().isPresent()) {
+                current.setIsAvailable(dto.getIsAvailable().get());
             }
 
             current.setUpdatedBy(CurrentUser.getCurrentUser().getEmail());

@@ -2,6 +2,7 @@ package com.cms.cms.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,25 +98,53 @@ public class ItemController {
 
         // Saving file in s3
 
-        String key = "uploads/items/" + UUID.randomUUID().toString() + "-" + item.getFile().getOriginalFilename();
+        if (item.getFile() != null) {
+            String key = "uploads/items/" + UUID.randomUUID().toString() + "-" + item.getFile().getOriginalFilename();
 
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .contentType(item.getFile().getContentType())
-                .build();
-        
-        s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromInputStream(item.getFile().getInputStream(), item.getFile().getSize()));
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .contentType(item.getFile().getContentType())
+                    .build();
+            
+            s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromInputStream(item.getFile().getInputStream(), item.getFile().getSize()));
 
-        String publicUrl = "https://" + bucketName + ".s3." + "ap-south-1" + ".amazonaws.com/" + key;
+            String publicUrl = "https://" + bucketName + ".s3." + "ap-south-1" + ".amazonaws.com/" + key;
 
-        item.setImagePath(key);
-        item.setImageUri(publicUrl);
+            item.setImagePath(key);
+            item.setImageUri(publicUrl);
+        }
         return itemService.createItem(item);
     }
 
     @PatchMapping("/{id}")
-    public Item updateItem(@PathVariable Long id, @RequestBody ItemDTO dto) {
+    public Item updateItem(@PathVariable Long id, @ModelAttribute ItemDTO dto) {
+        if (dto.getFile().isPresent()) {
+            // Delete the existing file from S3 if it exists
+            Item existingItem = itemService.getItemById(id);
+            if (existingItem.getImagePath() != null) {
+                DeleteObjectRequest request = DeleteObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(existingItem.getImagePath())
+                        .build();
+                s3Client.deleteObject(request);
+            }
+            // Upload the new file to S3
+            String key = "uploads/items/" + UUID.randomUUID().toString() + "-" + dto.getFile().get().getOriginalFilename();
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .contentType(dto.getFile().get().getContentType())
+                    .build();
+            try {
+                s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromInputStream(dto.getFile().get().getInputStream(), dto.getFile().get().getSize()));
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload file to S3", e);               
+            }
+            String publicUrl = "https://" + bucketName + ".s3." + "ap-south-1" + ".amazonaws.com/" + key;
+            dto.setImagePath(Optional.of(key));
+            dto.setImageUri(Optional.of(publicUrl));
+        }
         return  itemService.updateItem(id, dto);
     }
 
@@ -125,13 +154,14 @@ public class ItemController {
     	OperationResponse resp = itemService.deleteItem(id);
         // Delete the file from S3
 
-        DeleteObjectRequest request = DeleteObjectRequest.builder()
-                .bucket(bucketName)
-                .key(item.getImagePath())
-                .build();
-        
-        s3Client.deleteObject(request);
-
+        if (item.getImagePath() != null) {
+            DeleteObjectRequest request = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(item.getImagePath())
+                    .build();
+            
+            s3Client.deleteObject(request);
+        }
         return resp;
     }
 }

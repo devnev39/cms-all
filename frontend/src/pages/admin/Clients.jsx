@@ -131,7 +131,7 @@ function Clients() {
       <div className="py-4 display-6 text-white">Clients</div>
       <div className="table-responsive rounded border p-2 shadow bg-white">
         <table className="table table-striped table-bordered table-hover">
-          <thead>
+          <thead className="table-success text-dark">
             <tr>
               <th>ID</th>
               <th>Name</th>
