@@ -43,7 +43,8 @@ public class CouponTypeController {
 
     @PostMapping("")
     public CouponType createCouponType(@Valid @RequestBody NewCouponTypeDTO type, BindingResult result) {
-        if(result.hasErrors()){
+        System.out.println("In create Coupon Type******");
+    	if(result.hasErrors()){
             throw new InvalidInputException("CouponType", result);
         }
         return couponTypeService.createCouponType(type, result);

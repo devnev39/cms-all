@@ -3,157 +3,215 @@ import {
   getAllCouponTypes,
   createCouponType,
   updateCouponType,
-  deleteCouponType,
+  deleteCouponType
 } from '../../services/user/couponType';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
 import { Modal, Button, Table } from 'react-bootstrap';
+import { toast } from 'react-toastify';
+import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 
 const CouponTypes = () => {
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
   const [couponTypes, setCouponTypes] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    type: '',
+    minCount: '',
+    originalPrice: '',
+    discountPerCoupon: ''
+  });
   const [editData, setEditData] = useState(null);
+  const [catererId, setCatererId] = useState(null);
 
-  const fetchCouponTypes = async () => {
-    try {
-      const response = await getAllCouponTypes(token);
-      setCouponTypes(response.data);
-    } catch (error) {
-      console.error('Failed to load coupon types:', error);
-    }
+  const fetchCouponTypes = () => {
+    getAllCouponTypes(token)
+      .then(res => {
+        setCouponTypes(res.data);
+      })
+      .catch(err => {
+        toast.error('Failed to fetch coupon types');
+        console.error(err);
+      });
   };
 
   useEffect(() => {
     fetchCouponTypes();
+    // TODO: fetch catererId if needed from logged-in user context
+    setCatererId(1); // hardcoded or fetched from user state
   }, []);
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this coupon type?')) {
-      try {
-        await deleteCouponType(id, token);
+  const handleCreate = () => {
+    const payload = {
+      ...formData,
+      catererId
+    };
+    createCouponType(payload, token)
+      .then(() => {
+        toast.success('Coupon type created');
+        setShowModal(false);
         fetchCouponTypes();
-      } catch (error) {
-        console.error('Delete failed:', error);
-      }
-    }
+      })
+      .catch(() => toast.error('Create failed'));
   };
 
-  const handleEdit = (data) => {
+  const handleUpdate = () => {
+    const payload = {
+      id: editData.id,
+      ...formData,
+      catererId
+    };
+    updateCouponType(payload, token)
+      .then(() => {
+        toast.success('Coupon type updated');
+        setShowModal(false);
+        setEditData(null);
+        fetchCouponTypes();
+      })
+      .catch(() => toast.error('Update failed'));
+  };
+
+  const handleDelete = id => {
+    if (!window.confirm('Are you sure to delete this coupon type?')) return;
+    deleteCouponType(id, token)
+      .then(() => {
+        toast.success('Deleted successfully');
+        fetchCouponTypes();
+      })
+      .catch(() => toast.error('Delete failed'));
+  };
+
+  const handleInputChange = e => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const openEditModal = data => {
     setEditData(data);
+    setFormData({
+      type: data.type,
+      minCount: data.minCount,
+      originalPrice: data.originalPrice,
+      discountPerCoupon: data.discountPerCoupon
+    });
     setShowModal(true);
   };
 
-  const initialValues = {
-    name: editData ? editData.name : '',
-    description: editData ? editData.description : '',
-  };
-
-  const validationSchema = Yup.object({
-    name: Yup.string().required('Name is required'),
-    description: Yup.string().required('Description is required'),
-  });
-
-  const handleSubmit = async (values, { resetForm }) => {
-    try {
-      if (editData) {
-        await updateCouponType({ ...editData, ...values }, token);
-      } else {
-        await createCouponType(values, token);
-      }
-      fetchCouponTypes();
-      setShowModal(false);
-      setEditData(null);
-      resetForm();
-    } catch (error) {
-      console.error('Save failed:', error);
-    }
-  };
-
   return (
-    <div className="container mt-4">
-      <h3>Coupon Types</h3>
-      <Button onClick={() => setShowModal(true)}>Add New</Button>
-
-      <Table striped bordered hover className="mt-3">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {couponTypes.map((ct, idx) => (
-            <tr key={ct.id}>
-              <td>{idx + 1}</td>
-              <td>{ct.name}</td>
-              <td>{ct.description}</td>
-              <td>
-                <Button
-                  variant="warning"
-                  size="sm"
-                  onClick={() => handleEdit(ct)}
-                >
-                  Edit
-                </Button>{' '}
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => handleDelete(ct.id)}
-                >
-                  Delete
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>{editData ? 'Edit' : 'Add'} Coupon Type</Modal.Title>
-        </Modal.Header>
-        <Formik
-          enableReinitialize
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
+    <div className="container py-5 text-white">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="fw-bold">Coupon Types</h2>
+        <button
+          className="btn btn-success"
+          onClick={() => {
+            setFormData({
+              type: '',
+              minCount: '',
+              originalPrice: '',
+              discountPerCoupon: ''
+            });
+            setEditData(null);
+            setShowModal(true);
+          }}
         >
-          <Form>
-            <Modal.Body>
-              <div className="mb-3">
-                <label>Name</label>
-                <Field
-                  name="name"
-                  className="form-control"
-                  placeholder="Enter coupon type name"
-                />
-                <ErrorMessage name="name" component="div" className="text-danger" />
-              </div>
+          <FaPlus className="me-2" /> Add Coupon Type
+        </button>
+      </div>
 
-              <div className="mb-3">
-                <label>Description</label>
-                <Field
-                  name="description"
-                  className="form-control"
-                  placeholder="Enter description"
-                />
-                <ErrorMessage name="description" component="div" className="text-danger" />
+      <div className="table-responsive bg-white rounded shadow p-3 mx-auto" style={{ maxWidth: '900px' }}>
+        <Table bordered hover className="mb-0">
+          <thead className="table-success text-dark">
+            <tr>
+              <th>Type</th>
+              <th>Min Count</th>
+              <th>Original Price</th>
+              <th>Discount/Coupon</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {couponTypes.length > 0 ? (
+              couponTypes.map(c => (
+                <tr key={c.id}>
+                  <td>{c.type}</td>
+                  <td>{c.minCount}</td>
+                  <td>{c.originalPrice}</td>
+                  <td>{c.discountPerCoupon}</td>
+                  <td>
+                    <div className="d-flex gap-2">
+                      <button
+                        className="btn btn-sm btn-outline-primary"
+                        onClick={() => openEditModal(c)}
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={() => handleDelete(c.id)}
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr><td colSpan="5" className="text-center">No coupon types found.</td></tr>
+            )}
+          </tbody>
+        </Table>
+      </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="modal show fade d-block" tabIndex="-1" style={{ background: 'rgba(0,0,0,0.3)' }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">{editData ? 'Edit' : 'Add'} Coupon Type</h5>
+                <button className="btn-close" onClick={() => setShowModal(false)}></button>
               </div>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={() => setShowModal(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" variant="primary">
-                {editData ? 'Update' : 'Create'}
-              </Button>
-            </Modal.Footer>
-          </Form>
-        </Formik>
-      </Modal>
+              <div className="modal-body">
+                <input
+                  name="type"
+                  placeholder="Type"
+                  value={formData.type}
+                  onChange={handleInputChange}
+                  className="form-control mb-2"
+                />
+                <input
+                  name="minCount"
+                  placeholder="Min Count"
+                  type="number"
+                  value={formData.minCount}
+                  onChange={handleInputChange}
+                  className="form-control mb-2"
+                />
+                <input
+                  name="originalPrice"
+                  placeholder="Original Price"
+                  type="number"
+                  value={formData.originalPrice}
+                  onChange={handleInputChange}
+                  className="form-control mb-2"
+                />
+                <input
+                  name="discountPerCoupon"
+                  placeholder="Discount Per Coupon"
+                  type="number"
+                  value={formData.discountPerCoupon}
+                  onChange={handleInputChange}
+                  className="form-control"
+                />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
+                <button className="btn btn-primary" onClick={editData ? handleUpdate : handleCreate}>
+                  {editData ? 'Update' : 'Create'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
