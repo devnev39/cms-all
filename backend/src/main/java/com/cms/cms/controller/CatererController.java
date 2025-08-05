@@ -43,7 +43,14 @@ public class CatererController {
         } 
         throw new AuthorizationDeniedException("Customers are not allowed to access caterers.");
     }
-
+    
+    // find catererId from userId
+    @GetMapping("/user/{userId}")
+    public Caterer getCatererId(@PathVariable Long userId) {
+    	return catererService.getCatererByClientId(userId);
+    }
+    
+    
     @GetMapping("/{id}")
     public Caterer getCaterer(@PathVariable Long id) {
        return catererService.getCaterer(id);
