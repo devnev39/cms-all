@@ -20,10 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.cms.exception.InvalidInputException;
 import com.cms.cms.models.common.OperationResponse;
+import com.cms.cms.models.common.Roles;
 import com.cms.cms.models.dto.Item.ItemDTO;
 import com.cms.cms.models.dto.Item.NewItemDTO;
+import com.cms.cms.models.entity.Caterer;
 import com.cms.cms.models.entity.Item;
+import com.cms.cms.service.CatererService;
 import com.cms.cms.service.ItemService;
+import com.cms.cms.utils.CurrentUser;
 
 import jakarta.validation.Valid;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -46,9 +50,17 @@ public class ItemController {
     @Autowired
     private ItemService itemService;
 
+    @Autowired
+    private CatererService catererService;
+
     @GetMapping("")
     public List<Item> getAllItems() {
-        return itemService.getAllItems();
+        if (CurrentUser.hasRole(Roles.ROLE_CLNT)) {
+            // If the user is a client, fetch items by their caterer
+            // Get the caterer associated with the current user
+            return itemService.getItemsByCatererId(catererService.getCatererByClientId(CurrentUser.getCurrentUserId()).getId());
+        } else
+            return itemService.getAllItems(); // Assuming admin can also view all itemsret 
     }
 
     @GetMapping("/caterer/{catererId}")
