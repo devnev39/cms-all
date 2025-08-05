@@ -1,5 +1,7 @@
 package com.cms.cms.models.dto.Item;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -20,4 +22,10 @@ public class NewItemDTO {
 
     @NotNull(message = "Caterer ID must not be null")
     private Long catererId;
+
+    private MultipartFile file;
+
+    private String imageUri;
+
+    private String imagePath;
 }

@@ -1,5 +1,15 @@
 import React from "react";
 import "../../Styles/Landing.css";
+import {
+  FaCalendarCheck,
+  FaEdit,
+  FaHistory,
+  FaMobile,
+  FaMoneyBill,
+  FaShoppingCart,
+  FaTicketAlt,
+  FaWatchmanMonitoring,
+} from "react-icons/fa";
 import TestimonialsSection from "./TestimonialsSection.jsx";
 
 const Landing = () => {
@@ -88,43 +98,98 @@ const Landing = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="text-white text-center p-5 hero-section">
-        <h1 className="fade-in">Canteen Management System</h1>
-        <p className="lead fade-in">
-          Connecting Customers and Caterers — Securely and Seamlessly
-        </p>
-      </section>
-
-      {/* About Section */}
-      <section className="p-4 text-center txtclr">
-        <h2>About the Platform</h2>
-        <p>
-          Our platform enables customers to place food orders and receive
-          coupons instantly. Caterers get real-time order updates, secure online
-          payments, and complete control over their menu.
-        </p>
-      </section>
+      <div className="row my-5 mx-1">
+        <div className="col-md-6">
+          <section className="text-white p-4 hero-section">
+            <h1 className="fade-in display-5">Canteen Management System</h1>
+            <p className="lead fade-in">
+              Connecting Customers and Caterers — Securely and Seamlessly
+            </p>
+          </section>
+        </div>
+        <div className="col-md-6">
+          {/* About Section */}
+          <section className="text-white p-4 hero-section">
+            <h1 className="fade-in display-5 text-center">
+              About the Platform
+            </h1>
+            <p className="lead fade-in">
+              Our platform enables customers to place food orders and receive
+              coupons instantly. Caterers get real-time order updates, secure
+              online payments, and complete control over their menu.
+            </p>
+          </section>
+        </div>
+      </div>
 
       {/* Features Section */}
-      <section className="p-4 bg-black text-white">
-        <div className="row text-center">
+      <section className="p-4 hero-section text-white">
+        <div className="row">
           <div className="col-md-6 fade-in">
-            <h3>For Customers</h3>
-            <ul className="list-unstyled">
-              <li>✔️ View daily or full menu</li>
-              <li>✔️ Place orders with ease</li>
-              <li>✔️ Receive instant coupons</li>
-              <li>✔️ Buy coupons in advance</li>
-            </ul>
+            <div className="text-center">
+              <h3 className="display-5 text-center mb-3">For Customers</h3>
+              <div className="d-flex justify-content-center">
+                <ul className="list-unstyled text-start">
+                  <li>
+                    <div className="h4">
+                      <FaCalendarCheck className="mx-3 text-success" />
+                      View daily / full menu
+                    </div>
+                  </li>
+                  <li>
+                    <div className="h4">
+                      <FaMobile className="mx-3 text-success" /> Place orders
+                      with ease
+                    </div>
+                  </li>
+                  <li>
+                    <div className="h4">
+                      <FaTicketAlt className="mx-3 text-success" />
+                      Receive instant coupons
+                    </div>
+                  </li>
+                  <li>
+                    <div className="h4">
+                      <FaShoppingCart className="mx-3 text-success" />
+                      Buy coupons in advance
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
           <div className="col-md-6 fade-in">
-            <h3>For Caterers</h3>
-            <ul className="list-unstyled">
-              <li>✔️ Manage menu (add/edit/delete)</li>
-              <li>✔️ Track real-time orders</li>
-              <li>✔️ View all order history</li>
-              <li>✔️ Secure online payments</li>
-            </ul>
+            <div className="text-center">
+              <h3 className="display-5 text-center mb-3">For Caterers</h3>
+              <div className="d-flex justify-content-center">
+                <ul className="list-unstyled text-start">
+                  <li>
+                    <div className="h4">
+                      <FaEdit className="mx-3 text-danger" />
+                      Manage menu
+                    </div>
+                  </li>
+                  <li>
+                    <div className="h4">
+                      <FaWatchmanMonitoring className="mx-3 text-danger" />{" "}
+                      Place orders & Track real-time orders
+                    </div>
+                  </li>
+                  <li>
+                    <div className="h4">
+                      <FaHistory className="mx-3 text-danger" />
+                      View all order history
+                    </div>
+                  </li>
+                  <li>
+                    <div className="h4">
+                      <FaMoneyBill className="mx-3 text-danger" />
+                      Secure online payments
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </section>

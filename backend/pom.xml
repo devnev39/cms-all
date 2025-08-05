@@ -28,6 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<aws.java.sdk.version>2.32.15</aws.java.sdk.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -107,6 +108,18 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!-- <dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>bom</artifactId>
+			<version>${aws.java.sdk.version}</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency> -->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>2.32.15</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -119,13 +132,13 @@
 				<groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <configuration>
-                    <url>jdbc:mysql://db-1.c9i0weam0ign.ap-south-1.rds.amazonaws.com/cms</url>
+                    <!-- <url>jdbc:mysql://db-1.c9i0weam0ign.ap-south-1.rds.amazonaws.com/cms</url>
                     <user>admin</user>
-					<password>cmsadmin1234</password>
+					<password>cmsadmin1234</password> -->
 
-					<!-- <url>jdbc:mysql://localhost:3306/cms</url>
+					<url>jdbc:mysql://localhost:3306/cms</url>
                     <user>local</user>
-					<password>local123</password> -->
+					<password>local123</password>
 					<cleanDisabled>false</cleanDisabled>
 					<baselineVersion>0.0</baselineVersion>
 					<baselineOnMigrate>true</baselineOnMigrate>

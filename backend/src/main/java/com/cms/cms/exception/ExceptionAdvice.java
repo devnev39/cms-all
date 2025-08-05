@@ -31,4 +31,11 @@ public class ExceptionAdvice {
         hm.put("message", ex.getMessage());
         return ResponseEntity.status(ex.getStatusCode()).body(hm);  
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> exception(Exception ex) {
+        HashMap<String, String> hm = new HashMap<>();
+        hm.put("message", "An unexpected error occurred: " + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(hm);
+    }
 }
