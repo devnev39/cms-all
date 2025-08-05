@@ -12,6 +12,7 @@ import com.cms.cms.exception.CustomEntityNotFoundException;
 import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.dto.Item.ItemDTO;
 import com.cms.cms.models.dto.Item.NewItemDTO;
+import com.cms.cms.models.entity.Caterer;
 import com.cms.cms.models.entity.Item;
 import com.cms.cms.repository.CatererRepository;
 import com.cms.cms.repository.ItemRepository;
@@ -39,13 +40,19 @@ public class ItemService {
     }
 
     
-    public Item createItem( NewItemDTO item) {
+    public Item createItem(NewItemDTO item) {
     	Item newItem = mapper.map(item, Item.class);
     	newItem.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
+
+        Caterer caterer = catererRepo.findById(item.getCatererId()).orElseThrow(() -> new CustomEntityNotFoundException("Caterer"));
+
+        newItem.setCaterer(caterer);
+
+        newItem.setId(null);
+
         return repo.save(newItem);
     }
 
-    
     public Item updateItem( Long id, ItemDTO dto) {
         Optional<Item> item = repo.findById(id);
         if (!item.isPresent()) throw new CustomEntityNotFoundException("Item");

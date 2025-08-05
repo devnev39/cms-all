@@ -10,3 +10,6 @@
 
     Also while purchasing a coupon, we have to save the coupon type state into coupon table. So in coupon table we can add columns to
     store the current state of coupontype on which transaction is agreed.
+
+
+2. We're setting the id of the entities to null initially to tell hibernate that these are new entities.
