@@ -4,6 +4,10 @@ const catererSlice = createSlice({
   name: "caterer",
   initialState: {},
   reducers: {
+    setCaterer: (state, action) => {
+      state.caterer = action.payload;
+    },
+
     setCaterers: (state, action) => {
       state.caterers = action.payload;
     },
@@ -33,6 +37,11 @@ const catererSlice = createSlice({
   },
 });
 
-export const { setCaterers, removeCaterer, updateCaterer, addCaterer } =
-  catererSlice.actions;
+export const {
+  setCaterers,
+  removeCaterer,
+  updateCaterer,
+  addCaterer,
+  setCaterer,
+} = catererSlice.actions;
 export default catererSlice.reducer;

@@ -23,6 +23,8 @@ public class NewItemDTO {
     @NotNull(message = "Caterer ID must not be null")
     private Long catererId;
 
+    private Boolean isAvailable = true;
+
     private MultipartFile file;
 
     private String imageUri;

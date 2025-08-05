@@ -27,10 +27,13 @@ import lombok.AllArgsConstructor;
 public class CouponTypeService {
     public final CouponTypeRepository couponTypeRespository;
     public final CatererRepository catererRepo;
-    private final ModelMapper mapper;
 
     public List<CouponType> getAllCouponTypes(){
         return  couponTypeRespository.findAll();
+    }
+
+    public List<CouponType> getCouponTypesByCatererId(Long catererId) {
+        return couponTypeRespository.findByCatererId(catererId);
     }
 
     public CouponType getCouponType(Long id){

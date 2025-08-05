@@ -25,6 +25,9 @@ public class Item extends Commons{
 
     private String name;
     private double price;
+
+    private Boolean isAvailable;
+
     private String imageUri;
     private String imagePath;
 }

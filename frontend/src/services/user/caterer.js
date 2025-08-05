@@ -9,6 +9,14 @@ export function getAllCaterers(token) {
   });
 }
 
+export function getCatererByUserId(userId, token) {
+  return axios.get(`${config.base_url}/caterer/user/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
 export function createCaterer(caterer, token) {
   return axios.post(`${config.base_url}/caterer`, caterer, {
     headers: {

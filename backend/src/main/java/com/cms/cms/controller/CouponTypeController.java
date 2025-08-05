@@ -15,10 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.cms.exception.InvalidInputException;
 import com.cms.cms.models.common.OperationResponse;
+import com.cms.cms.models.common.Roles;
 import com.cms.cms.models.dto.CouponType.CouponTypeDTO;
 import com.cms.cms.models.dto.CouponType.NewCouponTypeDTO;
 import com.cms.cms.models.entity.CouponType;
+import com.cms.cms.service.CatererService;
 import com.cms.cms.service.CouponTypeService;
+import com.cms.cms.utils.CurrentUser;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -30,9 +33,15 @@ import lombok.AllArgsConstructor;
 public class CouponTypeController {
     
     private final CouponTypeService couponTypeService;
+    private final CatererService catererService;
 
     @GetMapping("")
     public List<CouponType> getAllCouponTypes() {
+        if (CurrentUser.hasRole(Roles.ROLE_CLNT)) {
+            // If the user is a client, fetch coupon types by their caterer
+            // Get the caterer associated with the current user
+            return couponTypeService.getCouponTypesByCatererId(catererService.getCatererByClientId(CurrentUser.getCurrentUser().getId()).getId());
+        }
        return couponTypeService.getAllCouponTypes();
     }
 

@@ -1,68 +1,204 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect, useRef, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
   getAllItems,
   deleteItem,
   updateItem,
   createItem,
-  getCatererId
-} from '../../services/user/items';
-import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
-import { toast } from 'react-toastify';
+} from "../../services/user/items";
+import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { toast } from "react-toastify";
 import {
   setItems,
-  setItem,
   updateItem as updateItemRedux,
-  removeItem as removeItemRedux
-} from '../../features/user/itemSlice';
+  removeItem as removeItemRedux,
+} from "../../features/user/itemSlice";
+import {
+  Field,
+  Form,
+  Formik,
+  FormikProvider,
+  useField,
+  useFormik,
+} from "formik";
+import * as yup from "yup";
+import { getCatererByUserId } from "../../services/user/caterer";
+
+const FileUpload = ({ fileRef, ...props }) => {
+  const [field, meta] = useField(props);
+  console.log(field);
+  console.log(meta);
+  return (
+    <div>
+      <label className="form-label" htmlFor="file">
+        Choose files
+      </label>{" "}
+      <input
+        className={
+          meta.touched && meta.error
+            ? "form-control is-invalid"
+            : "form-control"
+        }
+        ref={fileRef}
+        type="file"
+        {...field}
+      />
+      {meta.touched && meta.error ? (
+        <div className="invalid-feedback">{meta.error}</div>
+      ) : null}
+    </div>
+  );
+};
 
 const Items = () => {
   const [showModal, setShowModal] = useState(false);
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [formData, setFormData] = useState({ name: '', price: '' });
-  const token = sessionStorage.getItem('token');
+  // const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const token = sessionStorage.getItem("token");
   const dispatch = useDispatch();
-  const user = useSelector(state => state.user?.user);
+  const user = useSelector((state) => state.user?.user);
 
-  
+  const fileRef = useRef(null);
+
+  const [fileError, setFileError] = useState(null);
+  const [cachedUri, setCachedUri] = useState(null);
+
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+
+  const checkFileSize = (file) => {
+    let valid = true;
+    // const file = fileRef?.current?.file;
+    console.log("File:", file);
+    if (file) {
+      const size = file.size / 1024 / 1024;
+      if (size > 10) {
+        valid = false;
+      }
+    }
+    console.log("File size valid:", valid);
+    return valid;
+  };
+
+  const checkFileType = (file) => {
+    let valid = true;
+    // const file = fileRef?.current?.file;
+    console.log("File type:", file?.type);
+    if (file) {
+      const type = file.type.split("/")[1];
+      const validTypes = ["svg+xml", "jpeg", "png", "jpg"];
+      if (!validTypes.includes(type)) {
+        valid = false;
+      }
+    }
+    console.log("File type valid:", valid);
+    return valid;
+  };
+
+  const createFormik = useFormik({
+    initialValues: {
+      name: "",
+      price: "",
+      isAvailable: false,
+    },
+    validationSchema: yup.object({
+      name: yup.string().required("Name is required!"),
+      price: yup
+        .number()
+        .required("Price is required!")
+        .min(0, "Price must be a positive number"),
+    }),
+    onSubmit: (values) => {
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("price", values.price);
+      formData.append("catererId", catererId);
+      formData.append("isAvailable", values.isAvailable);
+      if (fileRef.current?.files[0]) {
+        formData.append("file", fileRef.current.files[0]);
+      }
+      createItem(formData, token)
+        .then((resp) => {
+          toast.success("Item created successfully!");
+          dispatch(setItems([...items, resp.data]));
+          setShowModal(false);
+        })
+        .catch((err) => {
+          toast.error(err.response?.data?.message || "Failed to create item");
+        });
+    },
+  });
+
+  const updateFormik = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      name: selectedItem?.name || "",
+      price: selectedItem?.price || "",
+      isAvailable: selectedItem?.isAvailable || false,
+    },
+    validationSchema: yup.object({
+      name: yup.string().required("Name is required!"),
+      price: yup
+        .number()
+        .required("Price is required!")
+        .min(0, "Price must be a positive number"),
+    }),
+    onSubmit: (values) => {
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("price", values.price);
+      formData.append("id", selectedItem.id);
+      formData.append("isAvailable", values.isAvailable);
+      if (fileRef.current?.files[0]) {
+        formData.append("file", fileRef.current.files[0]);
+      }
+      updateItem(formData, token)
+        .then((resp) => {
+          dispatch(updateItemRedux(resp.data));
+          toast.success("Item updated!");
+          setShowUpdateModal(false);
+        })
+        .catch((err) => {
+          toast.error(err?.response?.data?.message || "Update failed !");
+        });
+    },
+  });
+
   const userId = user?.id;
   // find catererId from userId
   const [catererId, setCatererId] = useState(null);
-  useEffect(() => { 
+  useEffect(() => {
     if (userId && token) {
-      getCatererId(userId, token) 
-        .then(res => {
+      getCatererByUserId(userId, token)
+        .then((res) => {
           console.log("res :", res.data);
           setCatererId(res.data.id);
           console.log("Caterer ID:", res.data.id);
-        })  
-        .catch(err => {
-          console.error("Failed to fetch caterer ID:", err);  
-          toast.error('Failed to fetch caterer ID');
-        }); 
+        })
+        .catch((err) => {
+          console.error("Failed to fetch caterer ID:", err);
+          toast.error("Failed to fetch caterer ID");
+        });
     }
   }, [userId]);
 
-  
+  const items = useSelector((state) => state.item?.items || []);
 
-  const items = useSelector(state => state.item?.items || []);
-  const selectedItem = useSelector(state => state.item?.item);
-
-const fetchItems = () => {
-  getAllItems(catererId, token)
-    .then(res => {
-      console.log("Fetched items:", res.data);
-      const filtered = res.data.filter(item => item.caterer?.id === catererId);
-      console.log("Filtered items:", filtered);
-      dispatch(setItems(filtered));
-      console.log("Items set in Redux:", items);
-    })
-    .catch(err => {
-      toast.error('Failed to fetch items');
-      console.error(err);
-    });
-};
-
+  const fetchItems = () => {
+    getAllItems(catererId, token)
+      .then((res) => {
+        console.log("Fetched items:", res.data);
+        const filtered = res.data.filter(
+          (item) => item.caterer?.id === catererId
+        );
+        console.log("Filtered items:", filtered);
+        dispatch(setItems(filtered));
+        console.log("Items set in Redux:", items);
+      })
+      .catch((err) => {
+        toast.error("Failed to fetch items");
+        console.error(err);
+      });
+  };
 
   useEffect(() => {
     if (token && catererId) {
@@ -70,79 +206,73 @@ const fetchItems = () => {
     }
   }, [token, catererId]);
 
-  const handleInputChange = e => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleCreate = () => {
-    if (!formData.name || !formData.price) return toast.error('All fields required');
-    const newItem = { ...formData, catererId };
-    createItem( newItem, token)
-      .then(() => {
-        toast.success('Item created');
-        setShowModal(false);
-        fetchItems();
-      })
-      .catch(() => toast.error('Create failed'));
-  };
-
-  const handleUpdate = () => {
-    if (!formData.name || !formData.price) return toast.error('All fields required');
-    updateItem({ id: selectedItem.id, ...formData }, token)
-      .then(res => {
-        toast.success('Item updated');
-        dispatch(updateItemRedux(res.data));
-        setShowUpdateModal(false);
-        dispatch(setItem(null));
-      })
-      .catch(() => toast.error('Update failed'));
-  };
-
-  const handleDelete = id => {
-    if (!window.confirm('Are you sure to delete this item?')) return;
+  const handleDelete = (id) => {
+    if (!window.confirm("Are you sure to delete this item?")) return;
     deleteItem(id, token)
       .then(() => {
-        toast.success('Item deleted');
+        toast.success("Item deleted");
         dispatch(removeItemRedux({ id }));
       })
-      .catch(() => toast.error('Delete failed'));
+      .catch(() => toast.error("Delete failed"));
   };
 
   return (
-    <div className="container py-5 text-white">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="fw-bold">Your Items</h2>
-        <button className="btn btn-success" onClick={() => {
-          setFormData({ name: '', price: '' });
-          setShowModal(true);
-        }}>
-          <FaPlus className="me-2" /> Add Item
-        </button>
-      </div>
-
-      <div className="table-responsive bg-white rounded shadow p-3 mx-auto" style={{ maxWidth: '900px' }}>
+    <div className="container">
+      <div className="py-4 display-6 text-white">Your Items</div>
+      <div className="table-responsive rounded border p-2 shadow bg-white">
         <table className="table table-hover table-bordered mb-0">
           <thead className="table-success text-dark">
             <tr>
               <th>Name</th>
               <th>Price (₹)</th>
+              <th>Image</th>
+              <th>Available</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {items.length > 0 ? (
-              items.map(item => (
+              items.map((item) => (
                 <tr key={item.id || item._id}>
                   <td>{item.name}</td>
                   <td>₹{item.price}</td>
+                  <td>
+                    <img
+                      src={item.imageUri || "https://via.placeholder.com/50"}
+                      alt={item.name}
+                      className="img-fluid"
+                      style={{ width: "5vw" }}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      defaultChecked={item.isAvailable}
+                      className="form-check-input text-danger"
+                      onChange={(event) => {
+                        const formData = new FormData();
+                        formData.append("id", item.id);
+                        formData.append("isAvailable", event.target.checked);
+                        updateItem(formData, token)
+                          .then((resp) => {
+                            dispatch(updateItemRedux(resp.data));
+                            toast.success("Item updated!");
+                            setShowUpdateModal(false);
+                          })
+                          .catch((err) => {
+                            toast.error(
+                              err?.response?.data?.message || "Update failed !"
+                            );
+                          });
+                      }}
+                    />
+                  </td>
                   <td>
                     <div className="d-flex gap-2">
                       <button
                         className="btn btn-sm btn-outline-primary"
                         onClick={() => {
-                          dispatch(setItem(item));
-                          setFormData({ name: item.name, price: item.price });
+                          setSelectedItem(item);
                           setShowUpdateModal(true);
                         }}
                       >
@@ -159,70 +289,323 @@ const fetchItems = () => {
                 </tr>
               ))
             ) : (
-              <tr><td colSpan="3" className="text-center">No items found.</td></tr>
+              <tr>
+                <td colSpan="3" className="text-center">
+                  No items found.
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
       </div>
+      <div className="d-flex justify-content-center my-4">
+        <button
+          className="btn btn-success"
+          onClick={() => {
+            setShowModal(true);
+          }}
+        >
+          <FaPlus className="me-2" /> Add Item
+        </button>
+      </div>
 
       {/* Create Modal */}
       {showModal && (
-        <Modal
-          title="Add Item"
-          onClose={() => setShowModal(false)}
-          onSave={handleCreate}
-          formData={formData}
-          onChange={handleInputChange}
-        />
+        <div
+          className="modal show fade d-block"
+          tabIndex="-1"
+          role="dialog"
+          style={{ background: "rgba(0,0,0,0.3)" }}
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Create Item</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowModal(false)}
+                ></button>
+              </div>
+              <FormikProvider value={createFormik}>
+                <form onSubmit={createFormik.handleSubmit}>
+                  <div className="modal-body">
+                    <div className="mb-3">
+                      <label className="form-label">Name</label>
+                      <input
+                        className={
+                          createFormik.touched.name && createFormik.errors.name
+                            ? "form-control is-invalid"
+                            : "form-control"
+                        }
+                        name="name"
+                        {...createFormik.getFieldProps("name")}
+                      />
+                      {createFormik.touched.name && createFormik.errors.name ? (
+                        <div className="invalid-feedback">
+                          {createFormik.errors.name}
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Price</label>
+                      <input
+                        className={
+                          createFormik.touched.price &&
+                          createFormik.errors.price
+                            ? "form-control is-invalid"
+                            : "form-control"
+                        }
+                        name="price"
+                        {...createFormik.getFieldProps("price")}
+                      />
+                      {createFormik.touched.price &&
+                      createFormik.errors.price ? (
+                        <div className="invalid-feedback">
+                          {createFormik.errors.price}
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="mb-3 form-check">
+                      <Field
+                        id="isAvailable"
+                        type="checkbox"
+                        className={
+                          createFormik.touched.isAvailable &&
+                          createFormik.errors.isAvailable
+                            ? "form-check-input is-invalid"
+                            : "form-check-input"
+                        }
+                        name="isAvailable"
+                        // {...createFormik.getFieldProps("isAvailable")}
+                      />
+                      {createFormik.touched.isAvailable &&
+                      createFormik.errors.isAvailable ? (
+                        <div className="invalid-feedback">
+                          {createFormik.errors.isAvailable}
+                        </div>
+                      ) : null}
+                      <label className="form-check-label" htmlFor="isAvailable">
+                        Available
+                      </label>
+                    </div>
+                    <div className="mb-3">
+                      {/* <label className="form-label">Image</label>
+                    <input
+                      type="file"
+                      className={
+                        createFormik.touched.price && createFormik.errors.price
+                          ? "form-control is-invalid"
+                          : "form-control"
+                      }
+                      name="file"
+                      {...createFormik.getFieldProps("file")}
+                    />
+                    {createFormik.touched.price && createFormik.errors.price ? (
+                      <div className="invalid-feedback">
+                        {createFormik.errors.price}
+                      </div>
+                    ) : null} */}
+                      <label className="form-label" htmlFor="file">
+                        Choose files
+                      </label>{" "}
+                      <input
+                        className={
+                          fileError ? "form-control is-invalid" : "form-control"
+                        }
+                        ref={fileRef}
+                        type="file"
+                        onChange={(event) => {
+                          const file = event.target.files[0];
+                          if (file) {
+                            if (!checkFileSize(file)) {
+                              setFileError("File size must be less than 10MB");
+                            } else if (!checkFileType(file)) {
+                              setFileError(
+                                "Invalid file type. Only images are allowed."
+                              );
+                            } else {
+                              setFileError(null);
+                              setCachedUri(URL.createObjectURL(file));
+                            }
+                          } else {
+                            setFileError(null);
+                          }
+                        }}
+                      />
+                      {fileError && (
+                        <div className="invalid-feedback">{fileError}</div>
+                      )}
+                      {cachedUri && (
+                        <div className="d-flex justify-content-center mt-4">
+                          <img
+                            src={cachedUri}
+                            alt="avatar"
+                            style={{ width: "50%" }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setShowModal(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn btn-success">
+                      Create
+                    </button>
+                  </div>
+                </form>
+              </FormikProvider>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Update Modal */}
       {showUpdateModal && (
-        <Modal
-          title="Update Item"
-          onClose={() => setShowUpdateModal(false)}
-          onSave={handleUpdate}
-          formData={formData}
-          onChange={handleInputChange}
-          isUpdate
-        />
+        <div
+          className="modal show fade d-block"
+          tabIndex="-1"
+          role="dialog"
+          style={{ background: "rgba(0,0,0,0.3)" }}
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Update Item</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowUpdateModal(false)}
+                ></button>
+              </div>
+              <form onSubmit={updateFormik.handleSubmit}>
+                <div className="modal-body">
+                  <div className="mb-3">
+                    <label className="form-label">Name</label>
+                    <input
+                      className={
+                        updateFormik.touched.name && updateFormik.errors.name
+                          ? "form-control is-invalid"
+                          : "form-control"
+                      }
+                      name="name"
+                      {...updateFormik.getFieldProps("name")}
+                    />
+                    {updateFormik.touched.name && updateFormik.errors.name ? (
+                      <div className="invalid-feedback">
+                        {updateFormik.errors.name}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Price</label>
+                    <input
+                      className={
+                        updateFormik.touched.price && updateFormik.errors.price
+                          ? "form-control is-invalid"
+                          : "form-control"
+                      }
+                      name="price"
+                      {...updateFormik.getFieldProps("price")}
+                    />
+                    {updateFormik.touched.price && updateFormik.errors.price ? (
+                      <div className="invalid-feedback">
+                        {updateFormik.errors.price}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="mb-3">
+                    {/* <label className="form-label">Image</label>
+                    <input
+                      type="file"
+                      className={
+                        createFormik.touched.price && createFormik.errors.price
+                          ? "form-control is-invalid"
+                          : "form-control"
+                      }
+                      name="file"
+                      {...createFormik.getFieldProps("file")}
+                    />
+                    {createFormik.touched.price && createFormik.errors.price ? (
+                      <div className="invalid-feedback">
+                        {createFormik.errors.price}
+                      </div>
+                    ) : null} */}
+                    <label className="form-label" htmlFor="file">
+                      Choose files
+                    </label>{" "}
+                    <input
+                      className={
+                        fileError ? "form-control is-invalid" : "form-control"
+                      }
+                      ref={fileRef}
+                      type="file"
+                      onChange={(event) => {
+                        const file = event.target.files[0];
+                        if (file) {
+                          if (!checkFileSize(file)) {
+                            setFileError("File size must be less than 10MB");
+                          } else if (!checkFileType(file)) {
+                            setFileError(
+                              "Invalid file type. Only images are allowed."
+                            );
+                          } else {
+                            setFileError(null);
+                            setCachedUri(URL.createObjectURL(file));
+                          }
+                        } else {
+                          setFileError(null);
+                        }
+                      }}
+                    />
+                    {fileError && (
+                      <div className="invalid-feedback">{fileError}</div>
+                    )}
+                    {cachedUri && (
+                      <div className="d-flex justify-content-center mt-4">
+                        <img
+                          src={cachedUri}
+                          alt="avatar"
+                          style={{ width: "50%" }}
+                        />
+                      </div>
+                    )}
+                    {!cachedUri && selectedItem && (
+                      <div className="d-flex justify-content-center mt-4">
+                        <img
+                          src={selectedItem.imageUri}
+                          alt="avatar"
+                          style={{ width: "50%" }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setShowUpdateModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn btn-success">
+                    Update
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
 };
-
-const Modal = ({ title, onClose, onSave, formData, onChange }) => (
-  <div className="modal show fade d-block" tabIndex="-1" style={{ background: 'rgba(0,0,0,0.3)' }}>
-    <div className="modal-dialog">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h5 className="modal-title">{title}</h5>
-          <button className="btn-close" onClick={onClose}></button>
-        </div>
-        <div className="modal-body">
-          <input
-            name="name"
-            placeholder="Item Name"
-            value={formData.name}
-            onChange={onChange}
-            className="form-control mb-3"
-          />
-          <input
-            name="price"
-            placeholder="Price"
-            type="number"
-            value={formData.price}
-            onChange={onChange}
-            className="form-control"
-          />
-        </div>
-        <div className="modal-footer">
-          <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
-          <button className="btn btn-primary" onClick={onSave}>Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 export default Items;
