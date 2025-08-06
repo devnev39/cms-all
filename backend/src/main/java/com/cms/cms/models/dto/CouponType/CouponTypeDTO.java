@@ -12,10 +12,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CouponTypeDTO {
-    private Optional<String> type = Optional.empty();
-    // private Optional<String> catererId = Optional.empty();
-    private Optional<Integer> minCount = Optional.empty();
-    private Optional<Double> originalPrice = Optional.empty();
-    private Optional<Double> discountPerCoupon = Optional.empty();
-    private Optional<Long> catererId = Optional.empty();
+	private Optional<String> type = Optional.empty();
+	// private Optional<String> catererId = Optional.empty();
+	private Optional<Integer> minCount = Optional.empty();
+	private Optional<Double> originalPrice = Optional.empty();
+	private Optional<Double> discountPerCoupon = Optional.empty();
+	private Optional<Long> catererId = Optional.empty();
 }
