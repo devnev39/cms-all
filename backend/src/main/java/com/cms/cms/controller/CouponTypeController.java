@@ -25,38 +25,37 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/coupon_type")
-@CrossOrigin(origins = {"*"})
+@CrossOrigin(origins = { "*" })
 @AllArgsConstructor
 public class CouponTypeController {
-    
-    private final CouponTypeService couponTypeService;
 
-    @GetMapping("")
-    public List<CouponType> getAllCouponTypes() {
-       return couponTypeService.getAllCouponTypes();
-    }
+	private final CouponTypeService couponTypeService;
 
-    @GetMapping("/{id}")
-    public CouponType getCouponType(@PathVariable Long id) {
-        return couponTypeService.getCouponType(id);
-    }
+	@GetMapping("")
+	public List<CouponType> getAllCouponTypes() {
+		return couponTypeService.getAllCouponTypes();
+	}
 
-    @PostMapping("")
-    public CouponType createCouponType(@Valid @RequestBody NewCouponTypeDTO type, BindingResult result) {
-        System.out.println("In create Coupon Type******");
-    	if(result.hasErrors()){
-            throw new InvalidInputException("CouponType", result);
-        }
-        return couponTypeService.createCouponType(type, result);
-    }
+	@GetMapping("/{id}")
+	public CouponType getCouponType(@PathVariable Long id) {
+		return couponTypeService.getCouponType(id);
+	}
 
-    @PatchMapping("/{id}")
-    public CouponType updateCouponType(@PathVariable Long id, @RequestBody CouponTypeDTO dto) {
-            return couponTypeService.updateCouponType(id, dto);
-    }
+	@PostMapping("")
+	public CouponType createCouponType(@Valid @RequestBody NewCouponTypeDTO type, BindingResult result) {
+		if (result.hasErrors()) {
+			throw new InvalidInputException("CouponType", result);
+		}
+		return couponTypeService.createCouponType(type, result);
+	}
 
-    @DeleteMapping("/{id}")
-    public OperationResponse deleteCouponType(@PathVariable Long id) {
-        return couponTypeService.deleteCouponType(id);
-    }
+	@PatchMapping("/{id}")
+	public CouponType updateCouponType(@PathVariable Long id, @RequestBody CouponTypeDTO dto) {
+		return couponTypeService.updateCouponType(id, dto);
+	}
+
+	@DeleteMapping("/{id}")
+	public OperationResponse deleteCouponType(@PathVariable Long id) {
+		return couponTypeService.deleteCouponType(id);
+	}
 }
