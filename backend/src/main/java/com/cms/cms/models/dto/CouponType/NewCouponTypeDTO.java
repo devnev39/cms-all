@@ -12,18 +12,18 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NewCouponTypeDTO {
-    @NotBlank
-    private String type; 
+	@NotBlank
+	private String type;
 
-    @NotNull
-    private Integer minCount;
+	@NotNull
+	private Integer minCount;
 
-    @NotNull
-    private Double originalPrice;
+	@NotNull
+	private Double originalPrice;
 
-    @NotNull
-    private Double discountPerCoupon;
+	@NotNull
+	private Double discountPerCoupon;
 
-    @NotNull
-    private Long catererId;
+	@NotNull
+	private Long catererId;
 }
