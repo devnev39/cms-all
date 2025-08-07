@@ -41,7 +41,9 @@ function Login() {
           if (sessionStorage.getItem("redirect")) {
             navigate(JSON.parse(sessionStorage.getItem("redirect")).to);
           } else {
-            navigate("/dashboard");
+            if (resp.data?.user?.role?.type === "ROLE_CSTMR") {
+              navigate("/menu");
+            } else navigate("/dashboard");
           }
         })
         .catch((err) => {

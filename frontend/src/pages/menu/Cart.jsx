@@ -80,7 +80,7 @@ function Cart() {
         toast.success("Order placed !");
         dispatch(setCart([]));
         sessionStorage.setItem("cart", JSON.stringify([]));
-        navigate("/orders");
+        navigate("/receipt", { state: { order: resp.data } });
       })
       .catch((err) => {
         toast.error(err?.response?.data?.message || "Update failed");

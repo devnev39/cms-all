@@ -9,6 +9,14 @@ export const createOrder = (cart, token) => {
   });
 };
 
+export const updateOrder = (order, token) => {
+  return axios.patch(`${config.base_url}/order/${order.id}`, order, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
 export const getAllOrders = (token) => {
   return axios.get(`${config.base_url}/order`, {
     headers: {
