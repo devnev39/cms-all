@@ -109,7 +109,9 @@ public class OrderService {
 			if (dto.getTotalAmount().isPresent()) {
 				current.setTotalAmount(dto.getTotalAmount().get());
 			}
-
+			if (dto.getIsValid().isPresent()) {
+				current.setIsValid(dto.getIsValid().get());
+			}
 			current.setUpdatedBy(CurrentUser.getCurrentUser().getEmail());
 			current.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 			return current;

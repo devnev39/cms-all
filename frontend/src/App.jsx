@@ -20,6 +20,8 @@ import Item from "./pages/menu/Item";
 import Cart from "./pages/menu/Cart";
 import Orders from "./pages/customer/Orders";
 import OrderRouter from "./pages/OrderRouter";
+import Recept from "./pages/customer/Receipt";
+import Receipt from "./pages/customer/Receipt";
 
 function App() {
   return (
@@ -43,6 +45,7 @@ function App() {
               <Route path="coupons" element={<Coupons />} />
               <Route path="cart" element={<Cart />} />
               <Route path="orders" element={<OrderRouter />} />
+              <Route path="receipt" element={<Receipt />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Route>

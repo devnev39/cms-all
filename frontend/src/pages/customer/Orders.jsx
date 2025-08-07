@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { setOrders } from "../../features/user/orderSlice";
 import { Modal } from "react-bootstrap";
 import "../../Styles/Landing.css";
+import { useNavigate } from "react-router";
 
 const glassCard = {
   background: "rgba(33,37,41,0.65)",
@@ -22,6 +23,7 @@ const glassCard = {
 
 export function Orders() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const orders = useSelector((state) => state.order.orders);
   const { user } = useCurrentUser();
   const token = sessionStorage.getItem("token");
@@ -57,7 +59,7 @@ export function Orders() {
       <div className="row">
         {orders && orders.length > 0 ? (
           orders.map((order) => (
-            <div className="col-12 col-md-6 col-lg-4" key={order.id}>
+            <div className="col-12 col-md-6 col-lg-4 my-3" key={order.id}>
               <div
                 className="card h-100"
                 style={glassCard}
@@ -153,6 +155,18 @@ export function Orders() {
                     </table>
                   </div>
                 </div>
+              </div>
+              <div className="d-flex justify-content-center">
+                <button
+                  className="btn btn-outline-primary"
+                  onClick={() => {
+                    navigate("/receipt", {
+                      state: { order: selectedOrder },
+                    });
+                  }}
+                >
+                  View Receipt
+                </button>
               </div>
             </Modal.Body>
           </>

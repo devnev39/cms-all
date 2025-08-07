@@ -13,4 +13,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OrderDTO {
     private Optional<Double> totalAmount = Optional.empty(); 
+    private Optional<Boolean> isValid = Optional.empty();
 }
