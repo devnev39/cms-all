@@ -4,7 +4,6 @@ import * as yup from "yup";
 import { toast } from "react-toastify";
 import { resetPassword, updateUser } from "../services/user/user";
 import { updateUser as updateUserRedux } from "../features/user/userSlice";
-import { useEffect, useMemo } from "react";
 
 function Profile() {
   const user = useSelector((state) => state.user.user);
@@ -82,6 +81,7 @@ function Profile() {
         <div className="col-md-6">
           <div className="card shadow-lg border-0 rounded-4 p-4">
             <h2 className="text-center">Profile</h2>
+            <hr />
             <form onSubmit={userForm.handleSubmit}>
               <div className="mb-3">
                 <label htmlFor="name" className="form-label fw-semibold">
@@ -167,6 +167,7 @@ function Profile() {
         <div className="col-md-6">
           <div className="card shadow-lg border-0 rounded-4 p-4">
             <h2 className="text-center">Reset Password</h2>
+            <hr />
             <form onSubmit={resetPasswordForm.handleSubmit}>
               <div className="mb-3">
                 <label htmlFor="oldPassword" className="form-label fw-semibold">

@@ -36,6 +36,28 @@ const menuOptions = {
       label: "Coupons",
       url: "coupons",
     },
+    {
+      label: "Orders",
+      url: "orders",
+    },
+  ],
+  ROLE_CSTMR: [
+    {
+      label: "Menu",
+      url: "menu",
+    },
+    {
+      label: "Coupons",
+      url: "coupons",
+    },
+    {
+      label: "Cart",
+      url: "cart",
+    },
+    {
+      label: "Orders",
+      url: "orders",
+    },
   ],
 };
 

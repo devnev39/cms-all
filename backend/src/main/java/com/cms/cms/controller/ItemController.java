@@ -56,12 +56,7 @@ public class ItemController {
 
     @GetMapping("")
     public List<Item> getAllItems() {
-        if (CurrentUser.hasRole(Roles.ROLE_CLNT)) {
-            // If the user is a client, fetch items by their caterer
-            // Get the caterer associated with the current user
-            return itemService.getItemsByCatererId(catererService.getCatererByClientId(CurrentUser.getCurrentUserId()).getId());
-        } else
-            return itemService.getAllItems(); // Assuming admin can also view all itemsret 
+        return itemService.getAllItems();
     }
 
     @GetMapping("/caterer/{catererId}")

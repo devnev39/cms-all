@@ -1,9 +1,17 @@
 package com.cms.cms.controller;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 
+import org.openpdf.pdf.ITextRenderer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +40,12 @@ import com.cms.cms.models.entity.Role;
 import com.cms.cms.repository.RoleRepository;
 import com.cms.cms.utils.JwtService;
 
+import freemarker.core.ParseException;
+import freemarker.template.Configuration;
+import freemarker.template.MalformedTemplateNameException;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateNotFoundException;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -45,6 +59,8 @@ public class AuthController {
     private JwtService jwtService;
 
     private RoleRepository repo;
+
+    private Configuration cfg;
 
     @GetMapping("")
     public ResponseEntity<?> login(@RequestHeader(value = "Authorization", required = false) String authHeader) throws Exception {
@@ -124,6 +140,33 @@ public class AuthController {
     //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "File upload failed"));
     //     }
     // }
+
+    @GetMapping("/test")
+    public ResponseEntity<?> getMethodName() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, TemplateException {
+        System.out.println(System.getProperty("user.dir"));
+        Map<String, Object> map = Map.of(
+            "user", "Bhuvanesh"
+        ); 
+        Template template = cfg.getTemplate("hello.ftlh");
+
+        // ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        Writer out = new StringWriter();
+        template.process(map, out);
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.setDocumentFromString(out.toString());
+        renderer.layout();
+        renderer.createPDF(bos);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/pdf");
+        headers.add("Content-Disposition", "attachment; filename=hello.pdf");
+
+        return ResponseEntity.ok().headers(headers).body(bos.toByteArray());
+        // return ResponseEntity.ok().build();
+    }
+    
     
 }
 
