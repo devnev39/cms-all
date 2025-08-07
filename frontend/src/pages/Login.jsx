@@ -38,7 +38,11 @@ function Login() {
           // set the user
           dispatch(setUser(resp.data?.user));
 
-          navigate("/dashboard");
+          if (sessionStorage.getItem("redirect")) {
+            navigate(JSON.parse(sessionStorage.getItem("redirect")).to);
+          } else {
+            navigate("/dashboard");
+          }
         })
         .catch((err) => {
           toast.error(err?.response?.data?.message);

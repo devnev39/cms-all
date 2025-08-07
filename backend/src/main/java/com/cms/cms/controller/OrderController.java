@@ -15,10 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.cms.exception.InvalidInputException;
 import com.cms.cms.models.common.OperationResponse;
+import com.cms.cms.models.common.Roles;
+import com.cms.cms.models.dto.Order.CartDTO;
 import com.cms.cms.models.dto.Order.NewOrderDTO;
 import com.cms.cms.models.dto.Order.OrderDTO;
 import com.cms.cms.models.entity.Order;
+import com.cms.cms.service.CatererService;
 import com.cms.cms.service.OrderService;
+import com.cms.cms.utils.CurrentUser;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -30,10 +34,16 @@ import lombok.AllArgsConstructor;
 public class OrderController {
 
 	private final OrderService orderService;
+	private final CatererService catererService;
 
 	@GetMapping("")
 	public List<Order> getAllOrders() {
-		return orderService.getAllOrders();
+		if (CurrentUser.hasRole(Roles.ROLE_CSTMR)) {
+			return orderService.getOrdersByCustomerId(CurrentUser.getCurrentUserId());
+		} else if (CurrentUser.hasRole(Roles.ROLE_CLNT)) {	
+			return orderService.getOrdersByCatererId(catererService.getCatererByClientId(CurrentUser.getCurrentUserId()).getId());
+		}
+		return List.of();
 	}
 
 	@GetMapping("/{id}")
@@ -41,13 +51,21 @@ public class OrderController {
 		return orderService.getOrderById(id);
 	}
 
+	// @PostMapping("")
+	// public Order createOrder(@Valid @RequestBody NewOrderDTO order, BindingResult result) {
+	// 	if(result.hasErrors()) {
+	// 		throw new InvalidInputException("Order", result);
+	// 	}
+	// 	return orderService.createOrder(order);
+	// }
+
 	@PostMapping("")
-	public Order createOrder(@Valid @RequestBody NewOrderDTO order, BindingResult result) {
-		if(result.hasErrors()) {
-			throw new InvalidInputException("Order", result);
-		}
-		return orderService.createOrder(order);
+	public Order createOrder(@RequestBody CartDTO entity) {
+		// Create order object
+		// Create Order details object with order object
+		return orderService.createOrder(entity);
 	}
+	
 
 	@PatchMapping("/{id}")
 	public Order updateOrder(@PathVariable Long id, @RequestBody OrderDTO dto) {

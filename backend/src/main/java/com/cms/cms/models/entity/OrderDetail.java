@@ -1,6 +1,9 @@
 package com.cms.cms.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,11 +22,10 @@ public class OrderDetail extends Commons{
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
 
     @ManyToOne
+    @JsonBackReference
     private Order order;
 
     private String itemName;
     private double itemPrice;
-    private String catererName;
     private int quantity;
-    private double pricePerUnit;
 }

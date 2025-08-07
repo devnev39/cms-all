@@ -13,3 +13,5 @@
 
 
 2. We're setting the id of the entities to null initially to tell hibernate that these are new entities.
+
+3. JsonBackReference and JsonManagedReference to avoid nesting of json objects.

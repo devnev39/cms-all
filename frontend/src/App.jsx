@@ -16,6 +16,10 @@ import NavbarLayout from "./components/NavbarLayout";
 import UserLayout from "./components/UserLayout";
 import Menu from "./pages/menu/Menu";
 import NotFound from "./pages/NotFound";
+import Item from "./pages/menu/Item";
+import Cart from "./pages/menu/Cart";
+import Orders from "./pages/customer/Orders";
+import OrderRouter from "./pages/OrderRouter";
 
 function App() {
   return (
@@ -28,6 +32,7 @@ function App() {
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
             <Route path="menu" element={<Menu />} />
+            <Route path="item/:id" element={<Item />} />
             <Route element={<AuthLayout />}>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="profile" element={<Profile />} />
@@ -36,6 +41,8 @@ function App() {
               <Route path="items" element={<Items />} />
               <Route path="coupontypes" element={<CouponTypes />} />
               <Route path="coupons" element={<Coupons />} />
+              <Route path="cart" element={<Cart />} />
+              <Route path="orders" element={<OrderRouter />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Route>

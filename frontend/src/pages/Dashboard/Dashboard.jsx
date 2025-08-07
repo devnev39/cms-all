@@ -1,9 +1,18 @@
 import React from "react";
+import { useCurrentUser } from "../../hooks/useCurrentUser";
+import ClientDashboard from "./ClientDashboard";
+import AdminDashboard from "./AdminDashboard";
 
 function Dashboard() {
   // Get current user
   // Depending on role render admin, client and customer dashboard along with menu
-  return <div className="display-6 text-white">Dashboard</div>;
+  const { user } = useCurrentUser();
+
+  return user && user?.role?.type === "ROLE_CLNT" ? (
+    <ClientDashboard />
+  ) : (
+    <AdminDashboard />
+  );
 }
 
 export default Dashboard;

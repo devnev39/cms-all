@@ -17,6 +17,17 @@ import * as yup from "yup";
 import { toast } from "react-toastify";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 
+const glassContainer = {
+  background: "rgba(33,37,41,0.65)",
+  borderRadius: "18px",
+  boxShadow: "0 8px 32px 0 rgba(31,38,135,0.18)",
+  backdropFilter: "blur(8px)",
+  WebkitBackdropFilter: "blur(8px)",
+  border: "1px solid rgba(255,255,255,0.18)",
+  padding: "20px",
+  color: "#fff",
+};
+
 function Caterers() {
   const dispatch = useDispatch();
   const caterers = useSelector((state) => state.caterer?.caterers);
@@ -133,309 +144,314 @@ function Caterers() {
   };
 
   return (
-    <div className="container">
-      <div className="py-4 display-6 text-white">Caterers</div>
-      <div className="table-responsive rounded border p-2 shadow bg-white">
-        <table className="table table-striped table-bordered table-hover">
-          <thead className="table-success text-dark">
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Client Name</th>
-              <th>Client Email</th>
-              <th>Created At</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.isArray(caterers) && caterers.length > 0 ? (
-              caterers.map((caterer) => (
-                <tr key={caterer.id}>
-                  <td>{caterer.id}</td>
-                  <td>{caterer.name}</td>
-                  <td>{caterer.user.name}</td>
-                  <td>{caterer.user.email}</td>
-                  <td>
-                    {caterer.createdAt
-                      ? new Date(caterer.createdAt).toLocaleString()
-                      : "-"}
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-sm btn-outline-primary me-2"
-                      onClick={() => {
-                        setSelectedCaterer(caterer);
-                        setShowUpdateModal(true);
-                      }}
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      className="btn btn-sm btn-outline-danger"
-                      onClick={() => handleDelete(caterer.id)}
-                    >
-                      <FaTrash />
-                    </button>
+    <div className="container py-4">
+      <div style={glassContainer}>
+        <div className="py-4 display-6 text-white">Caterers</div>
+        <div className="table-responsive">
+          <table className="table table-dark table-hover">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Client Name</th>
+                <th>Client Email</th>
+                <th>Created At</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.isArray(caterers) && caterers.length > 0 ? (
+                caterers.map((caterer) => (
+                  <tr key={caterer.id}>
+                    <td>{caterer.id}</td>
+                    <td>{caterer.name}</td>
+                    <td>{caterer.user.name}</td>
+                    <td>{caterer.user.email}</td>
+                    <td>
+                      {caterer.createdAt
+                        ? new Date(caterer.createdAt).toLocaleString()
+                        : "-"}
+                    </td>
+                    <td>
+                      <button
+                        className="btn btn-sm btn-outline-primary me-2"
+                        onClick={() => {
+                          setSelectedCaterer(caterer);
+                          setShowUpdateModal(true);
+                        }}
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={() => handleDelete(caterer.id)}
+                      >
+                        <FaTrash />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="text-center">
+                    No caterers found.
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6" className="text-center">
-                  No caterers found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      <div className="d-flex justify-content-center my-4">
-        <button className="btn btn-success" onClick={() => setShowModal(true)}>
-          <FaPlus className="me-2" />
-          Create Caterer
-        </button>
-      </div>
-      {showModal && (
-        <div
-          className="modal show fade d-block"
-          tabIndex="-1"
-          role="dialog"
-          style={{ background: "rgba(0,0,0,0.3)" }}
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Create Caterer</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowModal(false)}
-                ></button>
-              </div>
-              <form onSubmit={formik.handleSubmit}>
-                <div className="modal-body">
-                  <div className="mb-3">
-                    <label className="form-label">Name</label>
-                    <input
-                      className={
-                        formik.touched.name && formik.errors.name
-                          ? "form-control is-invalid"
-                          : "form-control"
-                      }
-                      name="name"
-                      maxLength={50}
-                      {...formik.getFieldProps("name")}
-                    />
-                    {formik.touched.name && formik.errors.name ? (
-                      <div className="invalid-feedback">
-                        {formik.errors.name}
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Razor Pay Key</label>
-                    <input
-                      className={
-                        formik.touched.razorpay_key &&
-                        formik.errors.razorpay_key
-                          ? "form-control is-invalid"
-                          : "form-control"
-                      }
-                      name="razorpay_key"
-                      maxLength={50}
-                      {...formik.getFieldProps("razorpay_key")}
-                    />
-                    {formik.touched.razorpay_key &&
-                    formik.errors.razorpay_key ? (
-                      <div className="invalid-feedback">
-                        {formik.errors.razorpay_key}
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Razor Pay Secret</label>
-                    <input
-                      className={
-                        formik.touched.razorpay_secret &&
-                        formik.errors.razorpay_secret
-                          ? "form-control is-invalid"
-                          : "form-control"
-                      }
-                      name="razorpay_secret"
-                      maxLength={50}
-                      {...formik.getFieldProps("razorpay_secret")}
-                    />
-                    {formik.touched.razorpay_secret &&
-                    formik.errors.razorpay_secret ? (
-                      <div className="invalid-feedback">
-                        {formik.errors.razorpay_secret}
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Client</label>
-                    <select
-                      className={
-                        formik.touched.userId && formik.errors.userId
-                          ? "form-select is-invalid"
-                          : "form-select"
-                      }
-                      name="userId"
-                      {...formik.getFieldProps("userId")}
-                    >
-                      <option value="">Select Client</option>
-                      {clients.map((client) => (
-                        <option key={client.id} value={client.id}>
-                          {client.name} ({client.email})
-                        </option>
-                      ))}
-                    </select>
-                    {formik.touched.userId && formik.errors.userId ? (
-                      <div className="invalid-feedback">
-                        {formik.errors.userId}
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-                <div className="modal-footer">
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div className="d-flex justify-content-center my-4">
+          <button
+            className="btn btn-outline-light"
+            onClick={() => setShowModal(true)}
+          >
+            <FaPlus className="me-2" />
+            Create Caterer
+          </button>
+        </div>
+        {showModal && (
+          <div
+            className="modal show fade d-block"
+            tabIndex="-1"
+            role="dialog"
+            style={{ background: "rgba(0,0,0,0.3)", height: "70vh" }}
+          >
+            <div className="modal-dialog">
+              <div className="modal-content bg-dark text-white">
+                <div className="modal-header">
+                  <h5 className="modal-title">Create Caterer</h5>
                   <button
                     type="button"
-                    className="btn btn-secondary"
+                    className="btn-close btn-close-white"
                     onClick={() => setShowModal(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn btn-success">
-                    Create
-                  </button>
+                  ></button>
                 </div>
-              </form>
+                <form onSubmit={formik.handleSubmit}>
+                  <div className="modal-body">
+                    <div className="mb-3">
+                      <label className="form-label">Name</label>
+                      <input
+                        className={
+                          formik.touched.name && formik.errors.name
+                            ? "form-control is-invalid bg-dark text-white"
+                            : "form-control bg-dark text-white"
+                        }
+                        name="name"
+                        maxLength={50}
+                        {...formik.getFieldProps("name")}
+                      />
+                      {formik.touched.name && formik.errors.name ? (
+                        <div className="invalid-feedback">
+                          {formik.errors.name}
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Razor Pay Key</label>
+                      <input
+                        className={
+                          formik.touched.razorpay_key &&
+                          formik.errors.razorpay_key
+                            ? "form-control is-invalid bg-dark text-white"
+                            : "form-control bg-dark text-white"
+                        }
+                        name="razorpay_key"
+                        maxLength={50}
+                        {...formik.getFieldProps("razorpay_key")}
+                      />
+                      {formik.touched.razorpay_key &&
+                      formik.errors.razorpay_key ? (
+                        <div className="invalid-feedback">
+                          {formik.errors.razorpay_key}
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Razor Pay Secret</label>
+                      <input
+                        className={
+                          formik.touched.razorpay_secret &&
+                          formik.errors.razorpay_secret
+                            ? "form-control is-invalid bg-dark text-white"
+                            : "form-control bg-dark text-white"
+                        }
+                        name="razorpay_secret"
+                        maxLength={50}
+                        {...formik.getFieldProps("razorpay_secret")}
+                      />
+                      {formik.touched.razorpay_secret &&
+                      formik.errors.razorpay_secret ? (
+                        <div className="invalid-feedback">
+                          {formik.errors.razorpay_secret}
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Client</label>
+                      <select
+                        className={
+                          formik.touched.userId && formik.errors.userId
+                            ? "form-select is-invalid bg-dark text-white"
+                            : "form-select bg-dark text-white"
+                        }
+                        name="userId"
+                        {...formik.getFieldProps("userId")}
+                      >
+                        <option value="">Select Client</option>
+                        {clients.map((client) => (
+                          <option key={client.id} value={client.id}>
+                            {client.name} ({client.email})
+                          </option>
+                        ))}
+                      </select>
+                      {formik.touched.userId && formik.errors.userId ? (
+                        <div className="invalid-feedback">
+                          {formik.errors.userId}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-outline-danger"
+                      onClick={() => setShowModal(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn btn-outline-light">
+                      Create
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-      {/* Update Modal */}
-      {showUpdateModal && (
-        <div
-          className="modal show fade d-block"
-          tabIndex="-1"
-          role="dialog"
-          style={{ background: "rgba(0,0,0,0.3)" }}
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Update Caterer</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowUpdateModal(false)}
-                ></button>
-              </div>
-              <form onSubmit={updateFormik.handleSubmit}>
-                <div className="modal-body">
-                  <div className="mb-3">
-                    <label className="form-label">Name</label>
-                    <input
-                      className={
-                        updateFormik.touched.name && updateFormik.errors.name
-                          ? "form-control is-invalid"
-                          : "form-control"
-                      }
-                      name="name"
-                      maxLength={50}
-                      {...updateFormik.getFieldProps("name")}
-                    />
-                    {updateFormik.touched.name && updateFormik.errors.name ? (
-                      <div className="invalid-feedback">
-                        {updateFormik.errors.name}
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Razor Pay Key</label>
-                    <input
-                      className={
-                        updateFormik.touched.razorpay_key &&
-                        updateFormik.errors.razorpay_key
-                          ? "form-control is-invalid"
-                          : "form-control"
-                      }
-                      name="razorpay_key"
-                      maxLength={50}
-                      {...updateFormik.getFieldProps("razorpay_key")}
-                    />
-                    {updateFormik.touched.razorpay_key &&
-                    updateFormik.errors.razorpay_key ? (
-                      <div className="invalid-feedback">
-                        {updateFormik.errors.razorpay_key}
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Razor Pay Secret</label>
-                    <input
-                      className={
-                        updateFormik.touched.razorpay_secret &&
-                        updateFormik.errors.razorpay_secret
-                          ? "form-control is-invalid"
-                          : "form-control"
-                      }
-                      name="razorpay_secret"
-                      maxLength={50}
-                      {...updateFormik.getFieldProps("razorpay_secret")}
-                    />
-                    {updateFormik.touched.razorpay_secret &&
-                    updateFormik.errors.razorpay_secret ? (
-                      <div className="invalid-feedback">
-                        {updateFormik.errors.razorpay_secret}
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Client</label>
-                    <select
-                      className={
-                        updateFormik.touched.userId &&
-                        updateFormik.errors.userId
-                          ? "form-select is-invalid"
-                          : "form-select"
-                      }
-                      name="userId"
-                      {...updateFormik.getFieldProps("userId")}
-                    >
-                      <option value="">Select Client</option>
-                      {clients.map((client) => (
-                        <option key={client.id} value={client.id}>
-                          {client.name} ({client.email})
-                        </option>
-                      ))}
-                    </select>
-                    {updateFormik.touched.userId &&
-                    updateFormik.errors.userId ? (
-                      <div className="invalid-feedback">
-                        {updateFormik.errors.userId}
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-                <div className="modal-footer">
+        )}
+        {/* Update Modal */}
+        {showUpdateModal && (
+          <div
+            className="modal show fade d-block"
+            tabIndex="-1"
+            role="dialog"
+            style={{ background: "rgba(0,0,0,0.3)", height: "70vh" }}
+          >
+            <div className="modal-dialog">
+              <div className="modal-content bg-dark text-white">
+                <div className="modal-header">
+                  <h5 className="modal-title">Update Caterer</h5>
                   <button
                     type="button"
-                    className="btn btn-secondary"
+                    className="btn-close"
                     onClick={() => setShowUpdateModal(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn btn-primary">
-                    Update
-                  </button>
+                  ></button>
                 </div>
-              </form>
+                <form onSubmit={updateFormik.handleSubmit}>
+                  <div className="modal-body">
+                    <div className="mb-3">
+                      <label className="form-label">Name</label>
+                      <input
+                        className={
+                          updateFormik.touched.name && updateFormik.errors.name
+                            ? "form-control is-invalid bg-dark text-white"
+                            : "form-control bg-dark text-white"
+                        }
+                        name="name"
+                        maxLength={50}
+                        {...updateFormik.getFieldProps("name")}
+                      />
+                      {updateFormik.touched.name && updateFormik.errors.name ? (
+                        <div className="invalid-feedback">
+                          {updateFormik.errors.name}
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Razor Pay Key</label>
+                      <input
+                        className={
+                          updateFormik.touched.razorpay_key &&
+                          updateFormik.errors.razorpay_key
+                            ? "form-control is-invalid bg-dark text-white"
+                            : "form-control bg-dark text-white"
+                        }
+                        name="razorpay_key"
+                        maxLength={50}
+                        {...updateFormik.getFieldProps("razorpay_key")}
+                      />
+                      {updateFormik.touched.razorpay_key &&
+                      updateFormik.errors.razorpay_key ? (
+                        <div className="invalid-feedback">
+                          {updateFormik.errors.razorpay_key}
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Razor Pay Secret</label>
+                      <input
+                        className={
+                          updateFormik.touched.razorpay_secret &&
+                          updateFormik.errors.razorpay_secret
+                            ? "form-control is-invalid bg-dark text-white"
+                            : "form-control bg-dark text-white"
+                        }
+                        name="razorpay_secret"
+                        maxLength={50}
+                        {...updateFormik.getFieldProps("razorpay_secret")}
+                      />
+                      {updateFormik.touched.razorpay_secret &&
+                      updateFormik.errors.razorpay_secret ? (
+                        <div className="invalid-feedback">
+                          {updateFormik.errors.razorpay_secret}
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Client</label>
+                      <select
+                        className={
+                          updateFormik.touched.userId &&
+                          updateFormik.errors.userId
+                            ? "form-select is-invalid bg-dark text-white"
+                            : "form-select bg-dark text-white"
+                        }
+                        name="userId"
+                        {...updateFormik.getFieldProps("userId")}
+                      >
+                        <option value="">Select Client</option>
+                        {clients.map((client) => (
+                          <option key={client.id} value={client.id}>
+                            {client.name} ({client.email})
+                          </option>
+                        ))}
+                      </select>
+                      {updateFormik.touched.userId &&
+                      updateFormik.errors.userId ? (
+                        <div className="invalid-feedback">
+                          {updateFormik.errors.userId}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-outline-danger"
+                      onClick={() => setShowUpdateModal(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn btn-primary">
+                      Update
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
