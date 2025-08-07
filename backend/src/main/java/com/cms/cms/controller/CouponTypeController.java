@@ -28,7 +28,7 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/coupon_type")
-@CrossOrigin(origins = {"*"})
+@CrossOrigin(origins = { "*" })
 @AllArgsConstructor
 public class CouponTypeController {
     
@@ -45,27 +45,26 @@ public class CouponTypeController {
        return couponTypeService.getAllCouponTypes();
     }
 
-    @GetMapping("/{id}")
-    public CouponType getCouponType(@PathVariable Long id) {
-        return couponTypeService.getCouponType(id);
-    }
+	@GetMapping("/{id}")
+	public CouponType getCouponType(@PathVariable Long id) {
+		return couponTypeService.getCouponType(id);
+	}
 
-    @PostMapping("")
-    public CouponType createCouponType(@Valid @RequestBody NewCouponTypeDTO type, BindingResult result) {
-        System.out.println("In create Coupon Type******");
-    	if(result.hasErrors()){
-            throw new InvalidInputException("CouponType", result);
-        }
-        return couponTypeService.createCouponType(type, result);
-    }
+	@PostMapping("")
+	public CouponType createCouponType(@Valid @RequestBody NewCouponTypeDTO type, BindingResult result) {
+		if (result.hasErrors()) {
+			throw new InvalidInputException("CouponType", result);
+		}
+		return couponTypeService.createCouponType(type, result);
+	}
 
-    @PatchMapping("/{id}")
-    public CouponType updateCouponType(@PathVariable Long id, @RequestBody CouponTypeDTO dto) {
-            return couponTypeService.updateCouponType(id, dto);
-    }
+	@PatchMapping("/{id}")
+	public CouponType updateCouponType(@PathVariable Long id, @RequestBody CouponTypeDTO dto) {
+		return couponTypeService.updateCouponType(id, dto);
+	}
 
-    @DeleteMapping("/{id}")
-    public OperationResponse deleteCouponType(@PathVariable Long id) {
-        return couponTypeService.deleteCouponType(id);
-    }
+	@DeleteMapping("/{id}")
+	public OperationResponse deleteCouponType(@PathVariable Long id) {
+		return couponTypeService.deleteCouponType(id);
+	}
 }
