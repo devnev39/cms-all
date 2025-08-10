@@ -2,7 +2,14 @@ import axios from "axios";
 import config from "../../config/config";
 
 export const createOrder = (cart, token) => {
-  return axios.post(`${config.base_url}/order`, cart, {
+  return axios.post(`${config.base_url}/order/create-payment`, cart, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const verifyPayment = (data, token) => {
+  return axios.post(`${config.base_url}/order/verify-payment`, data, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
