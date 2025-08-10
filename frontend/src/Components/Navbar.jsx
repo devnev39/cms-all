@@ -7,10 +7,6 @@ import { setUser } from "../features/user/userSlice";
 const menuOptions = {
   ROLE_ADMIN: [
     {
-      label: "Dashboard",
-      url: "dashboard",
-    },
-    {
       label: "Clients",
       url: "clients",
     },
