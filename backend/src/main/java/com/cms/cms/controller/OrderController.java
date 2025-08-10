@@ -141,7 +141,7 @@ public class OrderController {
 	            "razorpay_signature", rSignature
 	        );
 
-	        String secret = "xxxxxxxxxxxxxxx"; // same as in create-payment
+	        String secret = "6jbzmrsRLOSHSud7O8QLoR9O"; // same as in create-payment
 	        boolean isValid = razorpayService.verifySignature(attributes, secret);
 
 	        if (!isValid) {
