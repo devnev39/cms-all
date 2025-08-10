@@ -12,7 +12,6 @@ function Register() {
       email: "",
       password: "",
       mobile: "",
-      roleId: 3,
     },
     validationSchema: yup.object({
       name: yup.string().required("Name required !"),

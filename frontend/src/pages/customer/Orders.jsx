@@ -75,13 +75,28 @@ export function Orders() {
                       {formatDate(order.createdAt)}
                     </small>
                   </p>
-                  <div className="mt-2">
-                    {order.orderDetails.map((item) => (
-                      <div key={item.id} className="mb-1">
-                        {item.itemName} x {item.quantity}
+                  {order && order.orderType === "Items" ? (
+                    <>
+                      <div className="mt-2">
+                        {order.orderDetails.map((item) => (
+                          <div key={item.id} className="mb-1">
+                            {item.itemName} x {item.quantity}
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="mt-2">
+                        {order.coupons.map((coupon) => (
+                          <div key={coupon.id} className="mb-1">
+                            {coupon.couponType} x 1
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
                   <div className="mt-3 d-flex justify-content-between align-items-center">
                     <span className="fw-bold">Total:</span>
                     <span className="text-success fw-bold">
@@ -135,22 +150,54 @@ export function Orders() {
                   <div className="table-responsive">
                     <table className="table table-dark table-striped">
                       <thead>
-                        <tr>
-                          <th>Item</th>
-                          <th>Quantity</th>
-                          <th>Price</th>
-                          <th>Total</th>
-                        </tr>
+                        {selectedOrder &&
+                        selectedOrder.orderType === "Items" ? (
+                          <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                          </tr>
+                        ) : (
+                          <tr>
+                            <th>Coupon</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                          </tr>
+                        )}
                       </thead>
                       <tbody>
-                        {selectedOrder.orderDetails.map((item) => (
-                          <tr key={item.id}>
-                            <td>{item.itemName}</td>
-                            <td>{item.quantity}</td>
-                            <td>₹{item.itemPrice}</td>
-                            <td>₹{item.itemPrice * item.quantity}</td>
-                          </tr>
-                        ))}
+                        {selectedOrder &&
+                        selectedOrder.orderType === "Items" ? (
+                          <>
+                            {selectedOrder.orderDetails.map((item) => (
+                              <tr key={item.id}>
+                                <td>{item.itemName}</td>
+                                <td>{item.quantity}</td>
+                                <td>₹{item.itemPrice}</td>
+                                <td>₹{item.itemPrice * item.quantity}</td>
+                              </tr>
+                            ))}
+                          </>
+                        ) : (
+                          <>
+                            {selectedOrder.coupons.map((coupon) => (
+                              <tr key={coupon.id}>
+                                <td>{coupon.couponType}</td>
+                                <td>
+                                  {(coupon.couponTypeOriginalPrice -
+                                    coupon.couponTypeDiscountPerCoupon) *
+                                    coupon.couponTypeMinCount}
+                                </td>
+                                <td>
+                                  {(coupon.couponTypeOriginalPrice -
+                                    coupon.couponTypeDiscountPerCoupon) *
+                                    coupon.couponTypeMinCount}
+                                </td>
+                              </tr>
+                            ))}
+                          </>
+                        )}
                       </tbody>
                     </table>
                   </div>

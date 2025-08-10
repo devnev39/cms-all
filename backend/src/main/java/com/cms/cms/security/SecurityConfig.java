@@ -50,6 +50,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll()
                 .requestMatchers(HttpMethod.POST,"/user").permitAll()
                 .requestMatchers(HttpMethod.GET,"/item").permitAll()
+                .requestMatchers(HttpMethod.GET,"/coupon_type").permitAll()
                 .anyRequest()
                 .authenticated()
             )

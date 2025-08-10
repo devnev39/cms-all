@@ -65,6 +65,13 @@ public class OrderController {
 		// Create Order details object with order object
 		return orderService.createOrder(entity);
 	}
+
+	// @PostMapping("/coupon")
+	// public Order createOrderCoupon(@RequestBody CartDTO entity) {
+		
+	// 	return entity;
+	// }
+	
 	
 
 	@PatchMapping("/{id}")

@@ -41,16 +41,11 @@ function Receipt() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // const [order, setOrder] = useState(location.state.order);
-  console.log(location.state);
   const orders = useSelector((state) => state.order.orders);
-  console.log(orders);
   const order =
     orders.length != 0
       ? orders.filter((ord) => ord.id === location.state.order.id)[0]
       : null;
-
-  console.log(order);
 
   const [timeLeft, setTimeLeft] = useState("");
   const [isValid, setIsValid] = useState(true);
@@ -210,26 +205,55 @@ function Receipt() {
         <div className="table-responsive mb-4">
           <table className="table table-dark table-hover">
             <thead>
-              <tr>
-                <th>Item</th>
-                <th className="text-end">Price</th>
-                <th className="text-end">Quantity</th>
-                <th className="text-end">Total</th>
-              </tr>
+              {order.orderType === "Items" ? (
+                <tr>
+                  <th>Item</th>
+                  <th className="text-end">Price</th>
+                  <th className="text-end">Quantity</th>
+                  <th className="text-end">Total</th>
+                </tr>
+              ) : (
+                <tr>
+                  <th>Coupon</th>
+                  <th className="text-end">Price</th>
+                  <th className="text-end">Total</th>
+                </tr>
+              )}
             </thead>
             <tbody>
-              {order.orderDetails.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.itemName}</td>
-                  <td className="text-end">₹ {item.itemPrice}</td>
-                  <td className="text-end">{item.quantity}</td>
-                  <td className="text-end">
-                    ₹{item.itemPrice * item.quantity}
-                  </td>
-                </tr>
-              ))}
+              {order && order.orderType === "Items"
+                ? order.orderDetails.map((item) => (
+                    <tr key={item.id}>
+                      <td>{item.itemName}</td>
+                      <td className="text-end">₹ {item.itemPrice}</td>
+                      <td className="text-end">{item.quantity}</td>
+                      <td className="text-end">
+                        ₹{item.itemPrice * item.quantity}
+                      </td>
+                    </tr>
+                  ))
+                : order.coupons.map((coupon) => (
+                    <tr key={coupon.id}>
+                      <td>{coupon.couponType}</td>
+                      <td className="text-end">
+                        ₹{" "}
+                        {(coupon.couponTypeOriginalPrice -
+                          coupon.couponTypeDiscountPerCoupon) *
+                          coupon.couponTypeMinCount}
+                      </td>
+                      <td className="text-end">
+                        ₹{" "}
+                        {(coupon.couponTypeOriginalPrice -
+                          coupon.couponTypeDiscountPerCoupon) *
+                          coupon.couponTypeMinCount}
+                      </td>
+                    </tr>
+                  ))}
               <tr className="table-active">
-                <td colSpan="3" className="text-end fw-bold">
+                <td
+                  colSpan={order && order.orderType === "Items" ? 3 : 2}
+                  className="text-end fw-bold"
+                >
                   Grand Total:
                 </td>
                 <td className="text-end fw-bold">₹{order.totalAmount}</td>
