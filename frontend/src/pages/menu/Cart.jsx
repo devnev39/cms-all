@@ -68,24 +68,59 @@ function Cart() {
   };
 
   const checkoutCart = () => {
-    // Take current cart in redux
-    const catererId = cart.length ? cart[0].item.caterer.id : undefined;
-    if (!catererId) {
-      toast.error("Cannot find caterer !");
-      return;
-    }
-    createOrder({ cartItems: cart, catererId }, token)
-      .then((resp) => {
-        dispatch(addOrder(resp.data));
-        toast.success("Order placed !");
-        dispatch(setCart([]));
-        sessionStorage.setItem("cart", JSON.stringify([]));
-        navigate("/receipt", { state: { order: resp.data } });
-      })
-      .catch((err) => {
-        toast.error(err?.response?.data?.message || "Update failed");
-      });
-  };
+  const catererId = cart.length ? cart[0].item.caterer.id : undefined;
+  if (!catererId) {
+    toast.error("Cannot find caterer!");
+    return;
+  }
+
+  createOrder({ cartItems: cart, catererId }, token)
+    .then((resp) => {
+      const { razorpayOrderId, amount, currency, key } = resp.data;
+
+      const options = {
+        key: key, // from backend (test key in test mode)
+        amount: amount, // in paise
+        currency: currency,
+        name: "Canteen Management",
+        description: "Order Payment",
+        order_id: razorpayOrderId,
+        handler: function (response) {
+          // Send payment details to backend for verification
+          verifyPayment(
+            {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            },
+            token
+          )
+            .then((verifyResp) => {
+              if (verifyResp.data.success) {
+                toast.success("Payment successful!");
+                dispatch(addOrder(verifyResp.data.order));
+                dispatch(setCart([]));
+                sessionStorage.setItem("cart", JSON.stringify([]));
+                navigate("/receipt", { state: { order: verifyResp.data.order } });
+              } else {
+                toast.error("Payment verification failed!");
+              }
+            })
+            .catch(() => toast.error("Verification error!"));
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    })
+    .catch((err) => {
+      toast.error(err?.response?.data?.message || "Checkout failed");
+    });
+};
+
 
   return (
     <div className="container py-4">
