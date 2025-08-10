@@ -43,6 +43,7 @@ public class Order extends Commons {
     private String razorpayOrderId;
     private String razorpaySignature;
     private String paymentMethod;
+    private boolean paymentStatus;
 
     private OrderType orderType;
 
