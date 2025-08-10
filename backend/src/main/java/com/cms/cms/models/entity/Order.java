@@ -2,11 +2,8 @@ package com.cms.cms.models.entity;
 
 import java.util.List;
 
-import org.hibernate.annotations.ColumnDefault;
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -46,6 +43,12 @@ public class Order extends Commons {
     private String razorpayOrderId;
     private String razorpaySignature;
     private String paymentMethod;
+
+    private OrderType orderType;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<Coupon> coupons;
 
     private Boolean isValid = true;
 }

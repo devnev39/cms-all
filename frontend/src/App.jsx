@@ -10,18 +10,16 @@ import Caterers from "./pages/admin/Caterers";
 import Profile from "./pages/Profile";
 import Items from "./pages/client/Items";
 import CouponTypes from "./pages/client/CouponTypes";
-import Coupons from "./pages/client/Coupons";
+import CouponRouter from "./pages/CouponRouter";
 import BackgroundLayout from "./components/BackgroundLayout";
 import NavbarLayout from "./components/NavbarLayout";
-import UserLayout from "./components/UserLayout";
 import Menu from "./pages/menu/Menu";
 import NotFound from "./pages/NotFound";
 import Item from "./pages/menu/Item";
 import Cart from "./pages/menu/Cart";
-import Orders from "./pages/customer/Orders";
 import OrderRouter from "./pages/OrderRouter";
-import Recept from "./pages/customer/Receipt";
 import Receipt from "./pages/customer/Receipt";
+import CouponUsage from "./pages/customer/CouponUsage";
 
 function App() {
   return (
@@ -42,10 +40,11 @@ function App() {
               <Route path="caterers" element={<Caterers />} />
               <Route path="items" element={<Items />} />
               <Route path="coupontypes" element={<CouponTypes />} />
-              <Route path="coupons" element={<Coupons />} />
+              <Route path="coupons" element={<CouponRouter />} />
               <Route path="cart" element={<Cart />} />
               <Route path="orders" element={<OrderRouter />} />
               <Route path="receipt" element={<Receipt />} />
+              <Route path="coupon-usage/:id" element={<CouponUsage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Route>

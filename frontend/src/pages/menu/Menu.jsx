@@ -12,6 +12,10 @@ import {
   removeOneFromCart,
   setCart,
 } from "../../features/user/cartSlice";
+import { getAllCouponTypes } from "../../services/user/couponType";
+import { toast } from "react-toastify";
+import { setCouponTypes } from "../../features/user/couponTypeSlice";
+import { FaTicketAlt } from "react-icons/fa";
 
 const glassCard = {
   background: "rgba(33,37,41,0.65)",
@@ -27,8 +31,10 @@ const glassCard = {
 const Menu = () => {
   const dispatch = useDispatch();
   const items = useSelector((state) => state.item.items);
+  const couponTypes = useSelector((state) => state.couponType.couponTypes);
   const [filtered, setFiltered] = useState([]);
   const [catererId, setCatererId] = useState("all");
+  const [menuType, setMenuType] = useState("fooditems");
   const [showAvailable, setShowAvailable] = useState("all");
   const [search, setSearch] = useState("");
 
@@ -49,14 +55,28 @@ const Menu = () => {
         dispatch(setItems(resp.data));
       });
     }
-  }, [dispatch, items]);
+  }, [items]);
 
   useEffect(() => {
-    let data = items || [];
+    if (!couponTypes || couponTypes.length === 0) {
+      getAllCouponTypes()
+        .then((resp) => {
+          dispatch(setCouponTypes(resp.data));
+        })
+        .catch((err) => {
+          toast.error(
+            err?.response?.data?.message || "Error in fetching coupon types !"
+          );
+        });
+    }
+  }, [couponTypes]);
+
+  useEffect(() => {
+    let data = menuType === "fooditems" ? items : couponTypes;
     if (catererId !== "all") {
       data = data.filter((item) => item.caterer.id === Number(catererId));
     }
-    if (showAvailable !== "all") {
+    if (showAvailable !== "all" && menuType == "fooditems") {
       data = data.filter(
         (item) => item.isAvailable === (showAvailable === "true")
       );
@@ -70,7 +90,7 @@ const Menu = () => {
       );
     }
     setFiltered(data);
-  }, [items, catererId, showAvailable, search]);
+  }, [items, couponTypes, catererId, showAvailable, search, menuType]);
 
   // Get unique caterers for filter
   const caterers = Array.from(
@@ -84,8 +104,10 @@ const Menu = () => {
       sessionStorage.setItem("redirect", JSON.stringify({ to: "/menu" }));
       navigate("/login");
     } else {
+      setCatererId(item.caterer.id);
       dispatch(addToCartRedux({ item, count: 1 }));
       sessionStorage.setItem("cart", JSON.stringify(cart));
+      sessionStorage.setItem("cartType", menuType);
     }
 
     // Add to cart in session storage
@@ -96,35 +118,72 @@ const Menu = () => {
     sessionStorage.setItem("cart", JSON.stringify(cart));
   };
 
+  useEffect(() => {
+    if (cart && cart.length === 0) {
+      setCatererId("all");
+    }
+  }, [cart]);
+
   return (
     <div className="container py-4">
       <div className="row mb-3">
         <div className="col-md-4 mb-2">
-          <select
-            className="form-select"
-            value={catererId}
-            onChange={(e) => setCatererId(e.target.value)}
-          >
-            <option value="all">All Caterers</option>
-            {caterers.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
+          <div className="form-group">
+            <label className="text-white" htmlFor="catererSelect">
+              Select menu type
+            </label>
+            <select
+              id="menuTypeSelect"
+              className="form-select"
+              value={menuType}
+              onChange={(e) => setMenuType(e.target.value)}
+            >
+              <option value="fooditems">Food Items</option>
+              <option value="coupons">Coupons</option>
+            </select>
+          </div>
         </div>
         <div className="col-md-4 mb-2">
-          <select
-            className="form-select"
-            value={showAvailable}
-            onChange={(e) => setShowAvailable(e.target.value)}
-          >
-            <option value="all">All Items</option>
-            <option value="true">Available Only</option>
-            <option value="false">Unavailable Only</option>
-          </select>
+          <div className="form-group">
+            <label className="text-white" htmlFor="catererSelect">
+              Select caterer
+            </label>
+            <select
+              id="catererSelect"
+              className="form-select"
+              value={catererId}
+              onChange={(e) => setCatererId(e.target.value)}
+            >
+              <option value="all">All Caterers</option>
+              {caterers.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-        <div className="col-12 col-md-4 mx-auto mb-3">
+        <div className="col-md-4 mb-2">
+          <div className="form-group">
+            <label className="text-white" htmlFor="availabelSelect">
+              Select item availability
+            </label>
+            <select
+              id="availabelSelect"
+              className="form-select"
+              value={showAvailable}
+              onChange={(e) => setShowAvailable(e.target.value)}
+            >
+              <option value="all">All Items</option>
+              <option value="true">Available Only</option>
+              <option value="false">Unavailable Only</option>
+            </select>
+          </div>
+        </div>
+        <div className="col-12 col-md-4 mx-auto mb-3"></div>
+      </div>
+      <div className="d-flex justify-content-center w-100">
+        <div className="form-group w-50">
           <input
             type="text"
             className="form-control form-control-lg"
@@ -142,56 +201,92 @@ const Menu = () => {
         {filtered.map((item) => (
           <div className="col-md-4 col-sm-6 mb-4" key={item.id}>
             <div className="card h-100" style={glassCard}>
-              <img
-                src={item.imageUri}
-                className="card-img-top"
-                alt={item.name}
-                style={{
-                  height: 220,
-                  objectFit: "cover",
-                  borderRadius: "12px",
-                }}
-              />
+              {menuType === "fooditems" ? (
+                <img
+                  src={item.imageUri}
+                  className="card-img-top"
+                  alt={item.name}
+                  style={{
+                    height: 220,
+                    objectFit: "cover",
+                    borderRadius: "12px",
+                  }}
+                />
+              ) : (
+                <div className="d-flex justify-content-center align-items-center w-100 h-100">
+                  <FaTicketAlt size={60} />
+                </div>
+              )}
               <div className="card-body">
                 <h5 className="card-title fw-bold d-flex align-items-center">
-                  {item.name}
-                  {!item.isAvailable && (
-                    <span className="badge bg-danger ms-2">Not Available</span>
+                  {menuType === "fooditems" ? (
+                    <>
+                      {item.name}
+                      {!item.isAvailable && (
+                        <span className="badge bg-danger ms-2">
+                          Not Available
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <>{item.type}</>
                   )}
                 </h5>
                 <p className="card-text mb-1">
                   <span className="fw-bold">Caterer:</span> {item.caterer.name}
                 </p>
-                <p className="card-text mb-2">
-                  <span className="fw-bold">Price:</span> ₹{item.price}
-                </p>
+                {menuType === "fooditems" ? (
+                  <p className="card-text mb-2">
+                    <span className="fw-bold">Price:</span> ₹{item.price}
+                  </p>
+                ) : (
+                  <>
+                    <p className="card-text mb-2">
+                      <span className="fw-bold">Original Price:</span> ₹{" "}
+                      {item.originalPrice}
+                    </p>
+                    <p className="card-text mb-2">
+                      <span className="fw-bold">Discount Per Coupon:</span> ₹{" "}
+                      {item.discountPerCoupon}
+                    </p>
+                  </>
+                )}
+
                 {cart &&
                 cart.length &&
                 cart.filter((i) => i.item.id === item.id).length != 0 ? (
                   <div className="d-flex flex-column gap-3">
-                    <div className="d-flex justify-content-center align-items-center gap-2">
-                      <button
-                        className="btn btn-outline-primary"
-                        onClick={() => {
-                          dispatch(removeOneFromCart(item));
-                          sessionStorage.setItem("cart", JSON.stringify(cart));
-                        }}
-                      >
-                        -
-                      </button>
-                      <div>
-                        {cart.filter((i) => i.item.id === item.id)[0].count}
+                    {menuType === "fooditems" && (
+                      <div className="d-flex justify-content-center align-items-center gap-2">
+                        <button
+                          className="btn btn-outline-primary"
+                          onClick={() => {
+                            dispatch(removeOneFromCart(item));
+                            sessionStorage.setItem(
+                              "cart",
+                              JSON.stringify(cart)
+                            );
+                          }}
+                        >
+                          -
+                        </button>
+                        <div>
+                          {cart.filter((i) => i.item.id === item.id)[0].count}
+                        </div>
+                        <button
+                          className="btn btn-outline-primary"
+                          onClick={() => {
+                            dispatch(addOneMoreToCart(item));
+                            sessionStorage.setItem(
+                              "cart",
+                              JSON.stringify(cart)
+                            );
+                          }}
+                        >
+                          +
+                        </button>
                       </div>
-                      <button
-                        className="btn btn-outline-primary"
-                        onClick={() => {
-                          dispatch(addOneMoreToCart(item));
-                          sessionStorage.setItem("cart", JSON.stringify(cart));
-                        }}
-                      >
-                        +
-                      </button>
-                    </div>
+                    )}
                     <button
                       className="btn btn-danger w-100"
                       onClick={() => removeFromCart(item)}
@@ -206,13 +301,24 @@ const Menu = () => {
                     </button>
                   </div>
                 ) : (
-                  <button
-                    className="btn btn-success w-100"
-                    disabled={!item.isAvailable}
-                    onClick={() => addToCart(item)}
-                  >
-                    {item.isAvailable ? "Add to cart" : "Unavailable"}
-                  </button>
+                  <>
+                    {menuType === "foodItems" ? (
+                      <button
+                        className="btn btn-success w-100"
+                        disabled={!item.isAvailable}
+                        onClick={() => addToCart(item)}
+                      >
+                        {item.isAvailable ? "Add to cart" : "Unavailable"}
+                      </button>
+                    ) : (
+                      <button
+                        className="btn btn-success w-100"
+                        onClick={() => addToCart(item)}
+                      >
+                        Add to cart
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </div>

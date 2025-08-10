@@ -25,7 +25,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
-@CrossOrigin(origins = { "*" })
+@CrossOrigin(origins = {"*"})
 @RequestMapping("/user")
 @AllArgsConstructor
 public class UserController {
@@ -38,12 +38,13 @@ public class UserController {
         // If the role is ROLE_ADMIN return ROLE_CLNT users
         // If the role is ROLE_CLNT return only client's own user
         // If the role is ROLE_CSTMR return only customer's own user
-        return userService.getAllUsers(); 
+        return userService.getAllUsers();
     }
 
     @GetMapping("/self")
-    public User getCurrentUser(){
-        // UserPrincipal user = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public User getCurrentUser() {
+        // UserPrincipal user = (UserPrincipal)
+        // SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // System.out.println(user.getAuthorities());
         User u = userService.getCurrentUser();
         u.setPassword(null);
@@ -68,7 +69,7 @@ public class UserController {
         // If user is admin, allow cross updates
         // Otherwise only allow updates to current user
         User u = userService.updateUser(id, user);
-        u.setPassword(null); 
+        u.setPassword(null);
         return u;
     }
 
@@ -81,14 +82,15 @@ public class UserController {
         u.setPassword(null); // Do not return password
         return u;
     }
-    
+
 
     @DeleteMapping("/{id}")
     public OperationResponse deleteUser(@PathVariable Long id) {
         // Only admin can delete another user
         // User cannot delete itself
         if (userService.deleteUser(id)) {
-            return OperationResponse.createResponse("User deleted successfully !").addItem("id", id).addItem("entity", "User");
+            return OperationResponse.createResponse("User deleted successfully !").addItem("id", id)
+                    .addItem("entity", "User");
         }
         return OperationResponse.createResponse("Failed !");
     }

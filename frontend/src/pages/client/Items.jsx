@@ -272,7 +272,7 @@ const Items = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="3" className="text-center">
+                  <td colSpan="5" className="text-center">
                     No items found.
                   </td>
                 </tr>

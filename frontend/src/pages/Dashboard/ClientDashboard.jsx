@@ -54,7 +54,7 @@ function ClientDashboard() {
           toast.error(err?.response?.data?.message || "Failed to fetch orders");
         });
     }
-  }, [dispatch, user, token]);
+  }, [dispatch, user, token, caterer]);
 
   // Calculate statistics
   const totalOrders = orders.length;

@@ -63,7 +63,8 @@ public class UserService {
 		u.setPassword(encoder.encode(u.getPassword()));
 		// get the role from role_id
 
-		Role r = roleRepo.findById(u.getRoleId()).orElseThrow(() -> new CustomEntityNotFoundException("Role"));
+		Role r = roleRepo.findRoleByType("ROLE_CSTMR")
+				.orElseThrow(() -> new CustomEntityNotFoundException("Role"));
 
 		User user = mapper.map(u, User.class);
 

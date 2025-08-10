@@ -1,7 +1,7 @@
 import React from "react";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import ClientDashboard from "./ClientDashboard";
-import AdminDashboard from "./AdminDashboard";
+import Clients from "../admin/Clients";
 
 function Dashboard() {
   // Get current user
@@ -11,7 +11,7 @@ function Dashboard() {
   return user && user?.role?.type === "ROLE_CLNT" ? (
     <ClientDashboard />
   ) : (
-    <AdminDashboard />
+    <Clients />
   );
 }
 

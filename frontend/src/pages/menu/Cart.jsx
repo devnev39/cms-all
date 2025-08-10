@@ -11,6 +11,7 @@ import { createOrder } from "../../services/user/order";
 import { toast } from "react-toastify";
 import { addOrder } from "../../features/user/orderSlice";
 import { useNavigate } from "react-router";
+import { FaTicketAlt } from "react-icons/fa";
 
 const glassCard = {
   background: "rgba(33,37,41,0.65)",
@@ -26,6 +27,7 @@ const glassCard = {
 function Cart() {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart.cart) || [];
+  const cartType = sessionStorage.getItem("cartType");
   const token = sessionStorage.getItem("token");
   const navigate = useNavigate();
 
@@ -34,10 +36,15 @@ function Cart() {
     (sum, c) => sum + (c.count || c.quantity || 0),
     0
   );
-  const totalAmount = cart.reduce(
-    (sum, c) => sum + c.item.price * (c.count || c.quantity || 0),
-    0
-  );
+  const totalAmount = cart.reduce((sum, c) => {
+    if (cartType === "fooditems")
+      return sum + c.item.price * (c.count || c.quantity || 0);
+    else
+      return (
+        sum +
+        (c.item.originalPrice - c.item.discountPerCoupon) * c.item.minCount
+      );
+  }, 0);
 
   const handleRemove = (item) => {
     dispatch(removeFromCart(item));
@@ -144,43 +151,79 @@ function Cart() {
                   >
                     <div
                       className="d-flex align-items-center gap-3 mb-2 mb-md-0"
-                      style={{ minWidth: 0 }}
+                      style={{ minWidth: "30vw" }}
                     >
-                      <img
-                        src={c.item.imageUri}
-                        alt={c.item.name}
-                        style={{
-                          width: 80,
-                          height: 80,
-                          objectFit: "cover",
-                          borderRadius: 12,
-                        }}
-                      />
-                      <div className="flex-grow-1">
-                        <div className="fw-bold fs-5 text-truncate">
-                          {c.item.name}
+                      {cartType === "fooditems" ? (
+                        <img
+                          src={c.item.imageUri}
+                          alt={c.item.name}
+                          style={{
+                            width: 80,
+                            height: 80,
+                            objectFit: "cover",
+                            borderRadius: 12,
+                          }}
+                        />
+                      ) : (
+                        <div className="d-flex justify-content-center align-items-center w-50 h-100">
+                          <FaTicketAlt size={50} />
                         </div>
-                        <div className="text-white-50">
+                      )}
+                      <div className="flex-grow-1">
+                        <div className="fw-bold fs-5">
+                          {cartType === "fooditems" ? (
+                            <>{c.item.name}</>
+                          ) : (
+                            <>{c.item.type}</>
+                          )}
+                        </div>
+                        <div className="text-white-50 w-100">
                           Caterer: {c.item.caterer.name}
                         </div>
-                        <div className="text-success">₹{c.item.price}</div>
+                        {cartType === "fooditems" ? (
+                          <div className="text-success">₹{c.item.price}</div>
+                        ) : (
+                          <>
+                            <div className="text-success">
+                              Coupon Count: {c.item.minCount}
+                            </div>
+                            <div className="text-success">
+                              Original Price: {c.item.originalPrice}
+                            </div>
+                            <div className="text-success">
+                              Discount Per Coupon: {c.item.discountPerCoupon}
+                            </div>
+                            <div className="text-success">
+                              Total Price:{" "}
+                              {(c.item.originalPrice -
+                                c.item.discountPerCoupon) *
+                                c.item.minCount}
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                     <div className="d-flex align-items-center gap-2">
-                      <button
-                        className="btn btn-outline-primary btn-sm fw-bold"
-                        onClick={() => handleMinus(c.item)}
-                        disabled={(c.count || c.quantity) <= 1}
-                      >
-                        -
-                      </button>
-                      <span className="fs-5 mx-2">{c.count || c.quantity}</span>
-                      <button
-                        className="btn btn-outline-primary btn-sm fw-bold"
-                        onClick={() => handlePlus(c.item)}
-                      >
-                        +
-                      </button>
+                      {cartType === "fooditems" && (
+                        <>
+                          <button
+                            className="btn btn-outline-primary btn-sm fw-bold"
+                            onClick={() => handleMinus(c.item)}
+                            disabled={(c.count || c.quantity) <= 1}
+                          >
+                            -
+                          </button>
+                          <span className="fs-5 mx-2">
+                            {c.count || c.quantity}
+                          </span>
+                          <button
+                            className="btn btn-outline-primary btn-sm fw-bold"
+                            onClick={() => handlePlus(c.item)}
+                          >
+                            +
+                          </button>
+                        </>
+                      )}
                       <button
                         className="btn btn-danger btn-sm ms-2"
                         onClick={() => handleRemove(c.item)}

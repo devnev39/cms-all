@@ -16,6 +16,14 @@ export const verifyPayment = (data, token) => {
   });
 };
 
+// export const createOrderCoupon = (cart, token) => {
+//   return axios.post(`${config.base_url}/order`, cart, {
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   });
+// };
+
 export const updateOrder = (order, token) => {
   return axios.patch(`${config.base_url}/order/${order.id}`, order, {
     headers: {

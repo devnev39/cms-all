@@ -51,9 +51,6 @@ public class ItemController {
     @Autowired
     private ItemService itemService;
 
-    @Autowired
-    private CatererService catererService;
-
     @GetMapping("")
     public List<Item> getAllItems() {
         return itemService.getAllItems();
