@@ -5,6 +5,14 @@ export function createUser(user) {
   return axios.post(`${config.base_url}/user`, user);
 }
 
+export function createClientUser(user, token) {
+  return axios.post(`${config.base_url}/user/client`, user, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
 export function getCurrentUser(token) {
   return axios.get(`${config.base_url}/user/self`, {
     headers: {
