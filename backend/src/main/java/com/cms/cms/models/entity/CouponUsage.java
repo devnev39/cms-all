@@ -1,5 +1,6 @@
 package com.cms.cms.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,5 +20,6 @@ public class CouponUsage extends Commons {
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
 
     @ManyToOne
+    @JsonBackReference
     private Coupon coupon;
 }

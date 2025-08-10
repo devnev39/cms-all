@@ -1,5 +1,6 @@
 package com.cms.cms.models.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,14 +19,20 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class User extends Commons {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
 
     @ManyToOne
     Role role;
 
     String name;
+
+    @Column(unique = true)
     String email;
     String password;
+
+    @Column(unique = true)
     String mobile;
 
     public User(String email, Long id) {

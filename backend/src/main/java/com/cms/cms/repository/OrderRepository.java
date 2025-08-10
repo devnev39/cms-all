@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.cms.cms.models.entity.Order;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    List<Order> findByCustomerId(Long id);
-    List<Order> findByCatererId(Long id); 
+    List<Order> findByCustomerIdOrderByCreatedAtDesc(Long id);
+
+    List<Order> findByCatererIdOrderByCreatedAtDesc(Long id);
 }

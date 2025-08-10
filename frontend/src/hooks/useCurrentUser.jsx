@@ -37,6 +37,6 @@ export function useCurrentUser() {
           sessionStorage.removeItem("token");
         });
     }
-  }, [token]);
+  }, [dispatch, token, user]);
   return { user };
 }

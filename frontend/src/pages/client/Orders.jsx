@@ -103,9 +103,16 @@ export function Orders() {
                     <td>{order.customer.name}</td>
                     <td>{formatDate(order.createdAt)}</td>
                     <td>
-                      {order.orderDetails
-                        .map((item) => `${item.itemName} (${item.quantity})`)
-                        .join(", ")}
+                      {order.orderType === "Items"
+                        ? order.orderDetails
+                            .map(
+                              (item) => `${item.itemName} (${item.quantity})`
+                            )
+                            .join(", ")
+                        : `${order.coupons.map(
+                            (coupon) =>
+                              `${coupon.couponType} (${coupon.couponTypeMinCount})`
+                          )}`}
                     </td>
                     <td>₹{order.totalAmount}</td>
                     <td>
@@ -197,14 +204,34 @@ export function Orders() {
                     </tr>
                   </thead>
                   <tbody>
-                    {selectedOrder.orderDetails.map((item) => (
-                      <tr key={item.id}>
-                        <td>{item.itemName}</td>
-                        <td>₹{item.itemPrice}</td>
-                        <td>{item.quantity}</td>
-                        <td>₹{item.itemPrice * item.quantity}</td>
-                      </tr>
-                    ))}
+                    {selectedOrder.orderType === "Items"
+                      ? selectedOrder.orderDetails.map((item) => (
+                          <tr key={item.id}>
+                            <td>{item.itemName}</td>
+                            <td>₹{item.itemPrice}</td>
+                            <td>{item.quantity}</td>
+                            <td>₹{item.itemPrice * item.quantity}</td>
+                          </tr>
+                        ))
+                      : selectedOrder.coupons.map((coupon) => (
+                          <tr key={coupon.id}>
+                            <td>{coupon.couponType}</td>
+                            <td>
+                              ₹
+                              {(coupon.couponTypeOriginalPrice -
+                                coupon.couponTypeDiscountPerCoupon) *
+                                coupon.couponTypeMinCount}
+                            </td>
+                            <td>1</td>
+                            <td>
+                              ₹
+                              {(coupon.couponTypeOriginalPrice -
+                                coupon.couponTypeDiscountPerCoupon) *
+                                coupon.couponTypeMinCount}
+                            </td>
+                          </tr>
+                        ))}
+                    {}
                     <tr className="table-active">
                       <td colSpan="3" className="text-end fw-bold">
                         Grand Total:

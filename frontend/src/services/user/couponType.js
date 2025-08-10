@@ -2,8 +2,12 @@ import axios from "axios";
 import config from "../../config/config";
 
 // Get all coupon types
-export function getAllCouponTypes(token) {
-  return axios.get(`${config.base_url}/coupon_type`, {
+export function getAllCouponTypes() {
+  return axios.get(`${config.base_url}/coupon_type`);
+}
+
+export function getClientCouponTypes(token) {
+  return axios.get(`${config.base_url}/coupon_type/self`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -21,11 +25,15 @@ export function createCouponType(couponType, token) {
 
 // Update an existing coupon type
 export function updateCouponType(couponType, token) {
-  return axios.patch(`${config.base_url}/coupon_type/${couponType.id}`, couponType, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  return axios.patch(
+    `${config.base_url}/coupon_type/${couponType.id}`,
+    couponType,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 }
 
 // Delete a coupon type
@@ -36,4 +44,3 @@ export function deleteCouponType(id, token) {
     },
   });
 }
-

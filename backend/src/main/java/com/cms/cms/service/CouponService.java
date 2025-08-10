@@ -10,14 +10,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.cms.cms.exception.CustomEntityNotFoundException;
+import com.cms.cms.exception.InvalidInputException;
 import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.dto.Coupon.CouponDTO;
 import com.cms.cms.models.dto.Coupon.NewCouponDTO;
 import com.cms.cms.models.entity.Coupon;
 import com.cms.cms.models.entity.CouponType;
+import com.cms.cms.models.entity.CouponUsage;
 import com.cms.cms.models.entity.User;
 import com.cms.cms.repository.CouponRepository;
 import com.cms.cms.repository.CouponTypeRepository;
+import com.cms.cms.repository.CouponUsageRepository;
 import com.cms.cms.repository.UserRepository;
 import com.cms.cms.utils.CurrentUser;
 
@@ -27,28 +30,61 @@ import lombok.AllArgsConstructor;
 @Transactional
 @AllArgsConstructor
 public class CouponService {
+
     private CouponRepository repo;
     private UserRepository userRepo;
     private CouponTypeRepository couponTypeRepo;
+    private CouponUsageRepository couponUsageRepo;
     private final ModelMapper mapper;
 
     public List<Coupon> getAllCoupons() {
         return repo.findAll();
     }
 
-    public Coupon getCouponById( Long id) {
+    public List<Coupon> getCouponsByCatererId(Long catererId) {
+        return repo.findByCatererId(catererId);
+    }
+
+    public List<Coupon> getCouponsByCustomerId(Long customerId) {
+        return repo.findByCustomerId(customerId);
+    }
+
+    public Coupon useCoupon(Long couponId) {
+        // Get coupon object
+        Coupon coupon = repo.findById(couponId)
+                .orElseThrow(() -> new CustomEntityNotFoundException("Coupon"));
+
+        // Create couponUsage object
+
+        if (coupon.getCount() == 0)
+            throw new RuntimeException("Coupon is out of stock");
+
+        CouponUsage cu = new CouponUsage();
+        cu.setCoupon(coupon);
+
+        couponUsageRepo.save(cu);
+
+        coupon.setCount(coupon.getCount() - 1);
+
+        return repo.save(coupon);
+    }
+
+    public Coupon getCouponById(Long id) {
         Optional<Coupon> coupon = repo.findById(id);
-        if (!coupon.isPresent()) throw new CustomEntityNotFoundException("Coupon");
+        if (!coupon.isPresent())
+            throw new CustomEntityNotFoundException("Coupon");
         return coupon.get();
     }
 
     public Coupon createCoupon(NewCouponDTO coupon) {
-        User u = userRepo.findById(coupon.getUserId()).orElseThrow(() -> new CustomEntityNotFoundException("User"));
-        CouponType ct = couponTypeRepo.findById(coupon.getCouponTypeId()).orElseThrow(() -> new CustomEntityNotFoundException("Coupon Type"));
+        User u = userRepo.findById(coupon.getUserId())
+                .orElseThrow(() -> new CustomEntityNotFoundException("User"));
+        CouponType ct = couponTypeRepo.findById(coupon.getCouponTypeId())
+                .orElseThrow(() -> new CustomEntityNotFoundException("Coupon Type"));
         Coupon c = mapper.map(coupon, Coupon.class);
 
         c.setCustomer(u);
-        c.setCouponType(ct.getType()); 
+        c.setCouponType(ct.getType());
         c.setCouponTypeMinCount(ct.getMinCount());
         c.setCouponTypeOriginalPrice(ct.getOriginalPrice());
         c.setCouponTypeDiscountPerCoupon(ct.getDiscountPerCoupon());
@@ -56,9 +92,11 @@ public class CouponService {
 
         return repo.save(c);
     }
-    public Coupon updateCoupon(Long id,  CouponDTO dto) {
+
+    public Coupon updateCoupon(Long id, CouponDTO dto) {
         Optional<Coupon> opt = repo.findById(id);
-        if (!opt.isPresent()) throw new CustomEntityNotFoundException("Coupon");
+        if (!opt.isPresent())
+            throw new CustomEntityNotFoundException("Coupon");
         else {
             Coupon current = opt.get();
             if (dto.getCount().isPresent()) {
@@ -68,12 +106,14 @@ public class CouponService {
                 current.setValidity(dto.getValidity().get());
             }
             if (dto.getCustomerId().isPresent()) {
-                User u = userRepo.findById(dto.getCustomerId().get()).orElseThrow(() -> new CustomEntityNotFoundException("User"));
+                User u = userRepo.findById(dto.getCustomerId().get())
+                        .orElseThrow(() -> new CustomEntityNotFoundException("User"));
                 current.setCustomer(u);
             }
             // if (dto.getCouponTypeId().isPresent()) {
-            //     CouponType ct = couponTypeRepo.findById(dto.getCouponTypeId().get()).orElseThrow(() -> new CustomEntityNotFoundException("Coupon Type"));
-            //     current.setCouponType(ct);
+            // CouponType ct = couponTypeRepo.findById(dto.getCouponTypeId().get()).orElseThrow(()
+            // -> new CustomEntityNotFoundException("Coupon Type"));
+            // current.setCouponType(ct);
             // }
             current.setUpdatedBy(CurrentUser.getCurrentUser().getEmail());
             current.setUpdatedAt(new Timestamp(System.currentTimeMillis()));

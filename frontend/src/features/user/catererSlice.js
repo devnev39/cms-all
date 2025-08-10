@@ -2,7 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const catererSlice = createSlice({
   name: "caterer",
-  initialState: {},
+  initialState: {
+    caterer: null, // For client
+    caterers: [], // For admin
+  },
   reducers: {
     setCaterer: (state, action) => {
       state.caterer = action.payload;

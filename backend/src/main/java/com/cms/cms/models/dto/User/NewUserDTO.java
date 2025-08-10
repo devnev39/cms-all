@@ -25,8 +25,5 @@ public class NewUserDTO {
 
    @NotBlank
    private String mobile;
-
-   @NotNull
-   private Long roleId;
 }
 
