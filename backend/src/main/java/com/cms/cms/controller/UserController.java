@@ -64,6 +64,15 @@ public class UserController {
         return userService.createUser(u);
     }
 
+    @PostMapping("/client")
+    public User createClientUser(@Valid @RequestBody NewUserDTO u, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new InvalidInputException("User", result);
+        }
+        return userService.createClientUser(u);
+    }
+
+
     @PatchMapping("/{id}")
     public User updateUser(@PathVariable Long id, @RequestBody UserDTO user) {
         // If user is admin, allow cross updates

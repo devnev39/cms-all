@@ -9,7 +9,7 @@ import {
   getAllUsers,
   updateUser as updateUserService,
   deleteUser,
-  createUser,
+  createClientUser as createUser,
 } from "../../services/user/user";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -29,6 +29,7 @@ const glassContainer = {
 
 function Clients() {
   const dispatch = useDispatch();
+  const token = sessionStorage.getItem("token");
   const users = useSelector((state) => state.user.users) || [];
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -102,7 +103,7 @@ function Clients() {
         .required("Valid phone number required !"),
     }),
     onSubmit: (values, { resetForm }) => {
-      createUser(values)
+      createUser(values, token)
         .then(() => {
           toast.success("Client created!");
           setShowCreateModal(false);
