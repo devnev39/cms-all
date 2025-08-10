@@ -2,9 +2,6 @@ package com.cms.cms.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
@@ -21,21 +18,17 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.cms.cms.exception.CustomEntityNotFoundException;
 import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.common.UserPrincipal;
 import com.cms.cms.models.dto.AuthBody;
 import com.cms.cms.models.dto.AuthResponse;
-import com.cms.cms.models.dto.Item.NewItemDTO;
 import com.cms.cms.models.entity.Role;
 import com.cms.cms.repository.RoleRepository;
 import com.cms.cms.utils.JwtService;
@@ -49,7 +42,7 @@ import freemarker.template.TemplateNotFoundException;
 import lombok.AllArgsConstructor;
 
 @RestController
-@CrossOrigin(origins = { "*" })
+@CrossOrigin(origins = {"*"})
 @RequestMapping("/auth")
 @AllArgsConstructor
 public class AuthController {
@@ -63,7 +56,9 @@ public class AuthController {
     private Configuration cfg;
 
     @GetMapping("")
-    public ResponseEntity<?> login(@RequestHeader(value = "Authorization", required = false) String authHeader) throws Exception {
+    public ResponseEntity<?> login(
+            @RequestHeader(value = "Authorization", required = false) String authHeader)
+            throws Exception {
         if (authHeader == null || !authHeader.startsWith("Basic")) {
             HttpHeaders headers = new HttpHeaders();
             headers.add("WWW-Authenticate", "Basic realm=\"Access to the auth\"");
@@ -85,68 +80,68 @@ public class AuthController {
         System.out.println(username);
         System.out.println(password);
 
-        return new ResponseEntity<>(login(new AuthBody(username, password)), new HttpHeaders(), 200);
-    } 
+        return new ResponseEntity<>(login(new AuthBody(username, password)), new HttpHeaders(),
+                200);
+    }
 
     // @GetMapping("")
     // public ResponseEntity<String> login() throws Exception {
-    //     HttpHeaders headers = new HttpHeaders();
-    //     headers.add("WWW-Authenticate", "Basic");
-    //     return ResponseEntity.status(401).headers(headers).build();
+    // HttpHeaders headers = new HttpHeaders();
+    // headers.add("WWW-Authenticate", "Basic");
+    // return ResponseEntity.status(401).headers(headers).build();
     // }
-        
+
     @PostMapping("")
     public ResponseEntity<?> login(@RequestBody AuthBody body) throws Exception {
         try {
             Authentication auth = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(body.getEmail(), body.getPassword())
-            );
+                    new UsernamePasswordAuthenticationToken(body.getEmail(), body.getPassword()));
 
             if (auth.isAuthenticated()) {
                 UserPrincipal user = (UserPrincipal) auth.getPrincipal();
                 Role role = repo.findById(user.getUser().getRoleId()).get();
-                if (role == null) throw new CustomEntityNotFoundException("Role");
+                if (role == null)
+                    throw new CustomEntityNotFoundException("Role");
                 return new ResponseEntity<AuthResponse>(
-                    new AuthResponse(
-                        jwtService.getJwtToken(user.getUser(), role),
-                        user.getUser()
-                    ),
-                    HttpStatus.OK
-                );
-            }   
+                        new AuthResponse(jwtService.getJwtToken(user.getUser(), role),
+                                user.getUser()),
+                        HttpStatus.OK);
+            }
         } catch (BadCredentialsException e) {
-            return new ResponseEntity<OperationResponse>(new OperationResponse("Invalid username or password !"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<OperationResponse>(
+                    new OperationResponse("Invalid username or password !"),
+                    HttpStatus.UNAUTHORIZED);
         }
         throw new Exception("Error occured !");
     }
 
     // @PostMapping("/upload-file-test")
     // public ResponseEntity<Map<String, String>> postFile(@ModelAttribute NewItemDTO item) {
-    //     try {
-    //         // Simulate file processing
-    //         String fileName = item.getFile().getOriginalFilename();
-    //         long fileSize = item.getFile().getSize();
-    //         String contentType = item.getFile().getContentType();
+    // try {
+    // // Simulate file processing
+    // String fileName = item.getFile().getOriginalFilename();
+    // long fileSize = item.getFile().getSize();
+    // String contentType = item.getFile().getContentType();
 
-    //         // Return a response with file details
-    //         return ResponseEntity.ok(Map.of(
-    //             "fileName", fileName,
-    //             "fileSize", String.valueOf(fileSize),
-    //             "contentType", contentType,
-    //             "name", item.getName(),
-    //             "price", item.getPrice().toString()
-    //         ));
-    //     } catch (Exception e) {
-    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "File upload failed"));
-    //     }
+    // // Return a response with file details
+    // return ResponseEntity.ok(Map.of(
+    // "fileName", fileName,
+    // "fileSize", String.valueOf(fileSize),
+    // "contentType", contentType,
+    // "name", item.getName(),
+    // "price", item.getPrice().toString()
+    // ));
+    // } catch (Exception e) {
+    // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "File
+    // upload failed"));
+    // }
     // }
 
     @GetMapping("/test")
-    public ResponseEntity<?> getMethodName() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, TemplateException {
+    public ResponseEntity<?> getMethodName() throws TemplateNotFoundException,
+            MalformedTemplateNameException, ParseException, IOException, TemplateException {
         System.out.println(System.getProperty("user.dir"));
-        Map<String, Object> map = Map.of(
-            "user", "Bhuvanesh"
-        ); 
+        Map<String, Object> map = Map.of("user", "Bhuvanesh");
         Template template = cfg.getTemplate("hello.ftlh");
 
         // ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -166,8 +161,8 @@ public class AuthController {
         return ResponseEntity.ok().headers(headers).body(bos.toByteArray());
         // return ResponseEntity.ok().build();
     }
-    
-    
+
+
 }
 
 // $2a$10$v1Zz1CJnRpfIMIxDem8x2.zXi0u2IBjulHmebh7LAn3fuq76Ovk9C

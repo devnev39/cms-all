@@ -6,7 +6,7 @@ function BackgroundLayout() {
     <>
       <div
         style={{
-          backgroundImage: "url('src/assets/coreimg.png')",
+          backgroundImage: "url('/assets/coreimg.png')",
           backgroundSize: "cover",
           backgroundRepeat: "repeat-y",
           backgroundAttachment: "fixed",

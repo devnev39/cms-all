@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,11 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cms.cms.exception.InvalidInputException;
 import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.common.Roles;
 import com.cms.cms.models.dto.Order.CartDTO;
-import com.cms.cms.models.dto.Order.NewOrderDTO;
 import com.cms.cms.models.dto.Order.OrderDTO;
 import com.cms.cms.models.entity.Order;
 import com.cms.cms.repository.OrderRepository;
@@ -28,7 +25,6 @@ import com.cms.cms.service.OrderService;
 import com.cms.cms.service.RazorpayService;
 import com.cms.cms.utils.CurrentUser;
 
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
