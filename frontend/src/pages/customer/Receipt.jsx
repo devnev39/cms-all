@@ -42,10 +42,11 @@ function Receipt() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const orders = useSelector((state) => state.order.orders);
-  const order =
+  const order_filtered =
     orders.length != 0
-      ? orders.filter((ord) => ord.id === location.state.order.id)[0]
-      : null;
+      ? orders.filter((ord) => ord?.id === location?.state?.order?.id)
+      : [];
+  const order = order_filtered.length != 0 ? order_filtered[0] : null;
 
   const [timeLeft, setTimeLeft] = useState("");
   const [isValid, setIsValid] = useState(true);
