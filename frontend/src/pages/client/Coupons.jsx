@@ -58,8 +58,8 @@ function Coupons() {
         new Date(coupon.createdAt) >= startDate &&
         new Date(coupon.createdAt) <= endDate;
       const matchesSearch =
-        coupon.couponType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        coupon.caterer.name.toLowerCase().includes(searchTerm.toLowerCase());
+        coupon?.couponType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        coupon?.caterer?.name?.toLowerCase().includes(searchTerm.toLowerCase());
       const isActive = !showActiveCoupons || coupon.count > 0;
       return isInDateRange && matchesSearch && isActive;
     });
@@ -75,7 +75,9 @@ function Coupons() {
 
     filteredCoupons.forEach((coupon) => {
       stats.totalCoupons += coupon.count;
-      stats.totalRevenue += coupon.count * coupon.couponTypeOriginalPrice;
+      stats.totalRevenue +=
+        coupon.count *
+        (coupon.couponTypeOriginalPrice - coupon.couponTypeDiscountPerCoupon);
 
       if (!stats.byType[coupon.couponType]) {
         stats.byType[coupon.couponType] = {
@@ -85,7 +87,8 @@ function Coupons() {
       }
       stats.byType[coupon.couponType].count += coupon.count;
       stats.byType[coupon.couponType].revenue +=
-        coupon.count * coupon.couponTypeOriginalPrice;
+        coupon.count *
+        (coupon.couponTypeOriginalPrice - coupon.couponTypeDiscountPerCoupon);
     });
 
     return stats;
@@ -100,7 +103,7 @@ function Coupons() {
     });
   };
 
-  const stats = calculateStats();
+  const stats = coupons && calculateStats();
 
   return (
     <div className="container py-4">
@@ -214,7 +217,9 @@ function Coupons() {
                   <td>
                     ₹
                     {(
-                      coupon.count * coupon.couponTypeOriginalPrice
+                      coupon.count *
+                      (coupon.couponTypeOriginalPrice -
+                        coupon.couponTypeDiscountPerCoupon)
                     ).toLocaleString()}
                   </td>
                   <td>
