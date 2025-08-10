@@ -148,13 +148,13 @@
 				<groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <configuration>
-                    <!-- <url>jdbc:mysql://db-1.c9i0weam0ign.ap-south-1.rds.amazonaws.com/cms</url>
+                    <url>jdbc:mysql://db-1.c9i0weam0ign.ap-south-1.rds.amazonaws.com/cms</url>
                     <user>admin</user>
-					<password>cmsadmin1234</password> -->
+					<password>cmsadmin1234</password>
 
-					<url>jdbc:mysql://localhost:3306/cms</url>
+					<!-- <url>jdbc:mysql://localhost:3306/cms</url>
                     <user>local</user>
-					<password>local123</password>
+					<password>local123</password> -->
 					<cleanDisabled>false</cleanDisabled>
 					<baselineVersion>0.0</baselineVersion>
 					<baselineOnMigrate>true</baselineOnMigrate>

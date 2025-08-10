@@ -1,20 +1,16 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { getCurrentUser } from "../services/user/user";
 import { toast } from "react-toastify";
 import { Outlet, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../features/user/userSlice";
-import Menubar from "../Components/Menubar";
+import { getCatererByUserId } from "../services/user/caterer";
+import { setCaterer } from "../features/user/catererSlice";
 
 function AuthLayout() {
   const user = useSelector((state) => state.user.user);
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (!user) {
-  //     navigate("/login");
-  //   }
-  // }, []);
   const dispatch = useDispatch();
   useEffect(() => {
     // Get the token
@@ -25,6 +21,17 @@ function AuthLayout() {
       getCurrentUser(token)
         .then((resp) => {
           dispatch(setUser(resp.data));
+          if (resp.data.role.type === "ROLE_CLNT") {
+            getCatererByUserId(resp.data.id, token)
+              .then((catererResp) => {
+                dispatch(setCaterer(catererResp.data));
+              })
+              .catch((err) => {
+                toast.error(
+                  err?.response?.data?.message || "Failed to fetch caterer data"
+                );
+              });
+          }
         })
         .catch((err) => {
           toast.error(err?.response?.data?.message);
@@ -34,7 +41,7 @@ function AuthLayout() {
     } else if (!token) {
       navigate("/login");
     }
-  }, []);
+  }, [dispatch, navigate, user]);
   return (
     <>
       {/* <div className="row">

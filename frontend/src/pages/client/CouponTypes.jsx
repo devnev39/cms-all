@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import {
-  getAllCouponTypes,
   createCouponType,
   updateCouponType,
   deleteCouponType,
+  getClientCouponTypes,
 } from "../../services/user/couponType";
 import { Modal, Button, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { setCouponTypes } from "../../features/user/couponTypeSlice";
 
 const glassContainer = {
   background: "rgba(33,37,41,0.65)",
@@ -22,7 +24,9 @@ const glassContainer = {
 
 const CouponTypes = () => {
   const token = sessionStorage.getItem("token");
-  const [couponTypes, setCouponTypes] = useState([]);
+  const couponTypes = useSelector((state) => state.couponType.couponTypes);
+  const catererId = useSelector((state) => state.caterer?.caterer?.id);
+  const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     type: "",
@@ -31,23 +35,21 @@ const CouponTypes = () => {
     discountPerCoupon: "",
   });
   const [editData, setEditData] = useState(null);
-  const [catererId, setCatererId] = useState(null);
 
   const fetchCouponTypes = () => {
-    getAllCouponTypes(token)
+    getClientCouponTypes(token)
       .then((res) => {
-        setCouponTypes(res.data);
+        dispatch(setCouponTypes(res.data));
       })
       .catch((err) => {
-        toast.error("Failed to fetch coupon types");
-        console.error(err);
+        toast.error(
+          err?.response?.data?.message || "Error in fetching coupon types !"
+        );
       });
   };
 
   useEffect(() => {
     fetchCouponTypes();
-    // TODO: fetch catererId if needed from logged-in user context
-    setCatererId(1); // hardcoded or fetched from user state
   }, []);
 
   const handleCreate = () => {
@@ -151,7 +153,7 @@ const CouponTypes = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="text-center">
+                  <td colSpan="6" className="text-center">
                     No coupon types found.
                   </td>
                 </tr>

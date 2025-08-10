@@ -25,25 +25,28 @@ import com.cms.cms.utils.CurrentUser;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/coupon_type")
-@CrossOrigin(origins = { "*" })
+@CrossOrigin(origins = {"*"})
 @AllArgsConstructor
 public class CouponTypeController {
-    
-    private final CouponTypeService couponTypeService;
-    private final CatererService catererService;
 
-    @GetMapping("")
-    public List<CouponType> getAllCouponTypes() {
-        if (CurrentUser.hasRole(Roles.ROLE_CLNT)) {
-            // If the user is a client, fetch coupon types by their caterer
-            // Get the caterer associated with the current user
-            return couponTypeService.getCouponTypesByCatererId(catererService.getCatererByClientId(CurrentUser.getCurrentUser().getId()).getId());
-        }
-       return couponTypeService.getAllCouponTypes();
-    }
+	private final CouponTypeService couponTypeService;
+	private final CatererService catererService;
+
+	@GetMapping("")
+	public List<CouponType> getAllCouponTypes() {
+		return couponTypeService.getAllCouponTypes();
+	}
+
+	@GetMapping("/self")
+	public List<CouponType> getCouponTypesByClient() {
+		return couponTypeService.getCouponTypesByCatererId(
+				catererService.getCatererByClientId(CurrentUser.getCurrentUser().getId()).getId());
+	}
 
 	@GetMapping("/{id}")
 	public CouponType getCouponType(@PathVariable Long id) {
@@ -51,7 +54,8 @@ public class CouponTypeController {
 	}
 
 	@PostMapping("")
-	public CouponType createCouponType(@Valid @RequestBody NewCouponTypeDTO type, BindingResult result) {
+	public CouponType createCouponType(@Valid @RequestBody NewCouponTypeDTO type,
+			BindingResult result) {
 		if (result.hasErrors()) {
 			throw new InvalidInputException("CouponType", result);
 		}
