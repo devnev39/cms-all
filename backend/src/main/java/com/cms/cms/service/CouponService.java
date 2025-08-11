@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.cms.cms.exception.CustomEntityNotFoundException;
-import com.cms.cms.exception.InvalidInputException;
 import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.dto.Coupon.CouponDTO;
 import com.cms.cms.models.dto.Coupon.NewCouponDTO;

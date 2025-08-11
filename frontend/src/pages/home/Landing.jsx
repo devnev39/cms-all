@@ -34,7 +34,7 @@ const Landing = () => {
                 </p>
               </div>
               <img
-                src="src/images/slide6.jpeg"
+                src="/images/slide6.jpeg"
                 className="d-block w-50 banner-img"
                 alt="Slide 1"
               />
@@ -48,7 +48,7 @@ const Landing = () => {
                 <p>Hygienic meals made with care.</p>
               </div>
               <img
-                src="src/images/slide3.jpeg"
+                src="/images/slide3.jpeg"
                 className="d-block w-50 banner-img"
                 alt="Slide 2"
               />
@@ -62,7 +62,7 @@ const Landing = () => {
                 <p>No cash needed. Safe and fast!</p>
               </div>
               <img
-                src="src/images/slide4.jpeg"
+                src="/images/slide4.jpeg"
                 className="d-block w-50 banner-img"
                 alt="Slide 3"
               />
@@ -246,7 +246,7 @@ const Landing = () => {
             {[1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6].map((num, index) => (
               <img
                 key={index}
-                src={`src/images/slide${num}.jpeg`}
+                src={`/images/slide${num}.jpeg`}
                 alt={`Slide ${num}`}
                 className="slider-img"
               />

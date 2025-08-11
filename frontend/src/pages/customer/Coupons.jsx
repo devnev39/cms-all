@@ -42,7 +42,7 @@ function Coupons() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user && token && (!coupons || coupons.length === 0)) {
+    if (user && token) {
       getAllCoupons(token)
         .then((resp) => {
           dispatch(setCoupons(resp.data));
@@ -53,7 +53,7 @@ function Coupons() {
           );
         });
     }
-  }, [dispatch, user, token, coupons]);
+  }, []);
 
   const handleCouponClick = (coupon) => {
     setSelectedCoupon(coupon);

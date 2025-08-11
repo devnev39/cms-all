@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,11 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cms.cms.exception.InvalidInputException;
 import com.cms.cms.models.common.OperationResponse;
 import com.cms.cms.models.common.Roles;
 import com.cms.cms.models.dto.Order.CartDTO;
-import com.cms.cms.models.dto.Order.NewOrderDTO;
 import com.cms.cms.models.dto.Order.OrderDTO;
 import com.cms.cms.models.entity.Order;
 import com.cms.cms.repository.OrderRepository;
@@ -28,12 +25,11 @@ import com.cms.cms.service.OrderService;
 import com.cms.cms.service.RazorpayService;
 import com.cms.cms.utils.CurrentUser;
 
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/order")
-@CrossOrigin(origins = { "*" })
+@CrossOrigin(origins = {"*"})
 @AllArgsConstructor
 public class OrderController {
 
@@ -46,8 +42,9 @@ public class OrderController {
 	public List<Order> getAllOrders() {
 		if (CurrentUser.hasRole(Roles.ROLE_CSTMR)) {
 			return orderService.getOrdersByCustomerId(CurrentUser.getCurrentUserId());
-		} else if (CurrentUser.hasRole(Roles.ROLE_CLNT)) {	
-			return orderService.getOrdersByCatererId(catererService.getCatererByClientId(CurrentUser.getCurrentUserId()).getId());
+		} else if (CurrentUser.hasRole(Roles.ROLE_CLNT)) {
+			return orderService.getOrdersByCatererId(
+					catererService.getCatererByClientId(CurrentUser.getCurrentUserId()).getId());
 		}
 		return List.of();
 	}
@@ -59,10 +56,10 @@ public class OrderController {
 
 	// @PostMapping("")
 	// public Order createOrder(@Valid @RequestBody NewOrderDTO order, BindingResult result) {
-	// 	if(result.hasErrors()) {
-	// 		throw new InvalidInputException("Order", result);
-	// 	}
-	// 	return orderService.createOrder(order);
+	// if(result.hasErrors()) {
+	// throw new InvalidInputException("Order", result);
+	// }
+	// return orderService.createOrder(order);
 	// }
 
 	@PostMapping("")
@@ -74,11 +71,11 @@ public class OrderController {
 
 	// @PostMapping("/coupon")
 	// public Order createOrderCoupon(@RequestBody CartDTO entity) {
-		
-	// 	return entity;
+
+	// return entity;
 	// }
-	
-	
+
+
 
 	@PatchMapping("/{id}")
 	public Order updateOrder(@PathVariable Long id, @RequestBody OrderDTO dto) {
@@ -89,78 +86,74 @@ public class OrderController {
 	public OperationResponse deleteOrder(@PathVariable Long id) {
 		return orderService.deleteOrder(id);
 	}
-	
+
 	@PostMapping("/create-payment")
 	public ResponseEntity<?> createOrderAndPayment(@RequestBody CartDTO cartDto) {
-	    try {
-	        // Step 1: Create internal order using existing service logic
-	        Order savedOrder = orderService.createOrder(cartDto);
+		try {
+			// Step 1: Create internal order using existing service logic
+			Order savedOrder = orderService.createOrder(cartDto);
 
-	        // Step 2: Caterer keys (for now hardcode test keys; later store in Caterer entity)
-	        String key = "rzp_test_9BkfV69LZmboMX";
-	        String secret = "6jbzmrsRLOSHSud7O8QLoR9O";
+			// Step 2: Caterer keys (for now hardcode test keys; later store in Caterer entity)
+			String key = "rzp_test_9BkfV69LZmboMX";
+			String secret = "6jbzmrsRLOSHSud7O8QLoR9O";
 
-	        // Step 3: Create Razorpay order
-	        Long amountPaise = Math.round(savedOrder.getTotalAmount() * 100);
-	        String receipt = "order_rcpt_" + savedOrder.getId();
-	        com.razorpay.Order razorOrder = razorpayService.createRazorpayOrder(key, secret, amountPaise, receipt);
+			// Step 3: Create Razorpay order
+			System.out.println("Total amount: " + savedOrder.getTotalAmount());
+			Long amountPaise = Math.round(savedOrder.getTotalAmount() * 100);
+			String receipt = "order_rcpt_" + savedOrder.getId();
+			com.razorpay.Order razorOrder =
+					razorpayService.createRazorpayOrder(key, secret, amountPaise, receipt);
 
-	        // Step 4: Save razorpay order ID to DB
-	        savedOrder.setRazorpayOrderId(razorOrder.get("id"));
-	        orderRepository.save(savedOrder);
+			// Step 4: Save razorpay order ID to DB
+			savedOrder.setRazorpayOrderId(razorOrder.get("id"));
+			orderRepository.save(savedOrder);
 
-	        // Step 5: Return details to frontend
-	        return ResponseEntity.ok(Map.of(
-	            "orderId", savedOrder.getId(),
-	            "razorpayOrderId", razorOrder.get("id"),
-	            "amount", amountPaise,
-	            "currency", razorOrder.get("currency"),
-	            "key", key
-	        ));
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(500).body(Map.of("message", e.getMessage()));
-	    }
+			// Step 5: Return details to frontend
+			return ResponseEntity.ok(Map.of("orderId", savedOrder.getId(), "razorpayOrderId",
+					razorOrder.get("id"), "amount", amountPaise, "currency",
+					razorOrder.get("currency"), "key", key));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(500).body(Map.of("message", e.getMessage()));
+		}
 	}
 
 	@PostMapping("/verify-payment")
 	public ResponseEntity<?> verifyPayment(@RequestBody Map<String, String> payload) {
-	    try {
-	        Long internalOrderId = Long.valueOf(payload.get("orderId"));
-	        String rPaymentId = payload.get("razorpay_payment_id");
-	        String rOrderId = payload.get("razorpay_order_id");
-	        String rSignature = payload.get("razorpay_signature");
+		try {
+			Long internalOrderId = Long.valueOf(payload.get("orderId"));
+			String rPaymentId = payload.get("razorpay_payment_id");
+			String rOrderId = payload.get("razorpay_order_id");
+			String rSignature = payload.get("razorpay_signature");
 
-	        Order order = orderRepository.findById(internalOrderId)
-	                .orElseThrow(() -> new RuntimeException("Order not found"));
+			Order order = orderRepository.findById(internalOrderId)
+					.orElseThrow(() -> new RuntimeException("Order not found"));
 
-	        // Step 1: Verify signature
-	        Map<String, String> attributes = Map.of(
-	            "razorpay_payment_id", rPaymentId,
-	            "razorpay_order_id", rOrderId,
-	            "razorpay_signature", rSignature
-	        );
+			// Step 1: Verify signature
+			Map<String, String> attributes = Map.of("razorpay_payment_id", rPaymentId,
+					"razorpay_order_id", rOrderId, "razorpay_signature", rSignature);
 
-	        String secret = "6jbzmrsRLOSHSud7O8QLoR9O"; // same as in create-payment
-	        boolean isValid = razorpayService.verifySignature(attributes, secret);
+			String secret = "6jbzmrsRLOSHSud7O8QLoR9O"; // same as in create-payment
+			boolean paymentDone = razorpayService.verifySignature(attributes, secret);
 
-	        if (!isValid) {
-	            order.setIsValid(false);
-	            orderRepository.save(order);
-	            return ResponseEntity.status(400).body(Map.of("message", "Invalid signature"));
-	        }
+			if (!paymentDone) {
+				order.setIsValid(false);
+				order.setPaymentStatus(false);
+				orderRepository.save(order);
+				return ResponseEntity.status(400).body(Map.of("message", "Invalid signature"));
+			}
 
-	        // Step 2: Mark order as paid
-	        order.setRazorpayPaymentId(rPaymentId);
-	        order.setRazorpaySignature(rSignature);
-	        order.setIsValid(true);
-	        orderRepository.save(order);
+			// Step 2: Mark order as paid
+			order.setRazorpayPaymentId(rPaymentId);
+			order.setRazorpaySignature(rSignature);
+			order.setPaymentStatus(true);
+			order = orderRepository.save(order);
 
-	        return ResponseEntity.ok(Map.of("message", "Payment verified successfully"));
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(500).body(Map.of("message", e.getMessage()));
-	    }
+			return ResponseEntity.ok(order);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(500).body(Map.of("message", e.getMessage()));
+		}
 	}
 
 }
