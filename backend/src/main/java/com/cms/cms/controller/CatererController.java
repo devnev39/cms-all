@@ -28,7 +28,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
-@CrossOrigin("http://localhost:5173")
+@CrossOrigin(origins = {"*"})
 @RequestMapping("/caterer")
 @AllArgsConstructor
 public class CatererController {
@@ -40,29 +40,30 @@ public class CatererController {
             return catererService.getAllCaterers();
         } else if (CurrentUser.hasRole(Roles.ROLE_CLNT)) {
             return List.of(catererService.getCatererByClientId(CurrentUser.getCurrentUserId()));
-        } 
+        }
         throw new AuthorizationDeniedException("Customers are not allowed to access caterers.");
     }
-    
+
     // find catererId from userId
     @GetMapping("/user/{userId}")
     public Caterer getCatererId(@PathVariable Long userId) {
-    	return catererService.getCatererByClientId(userId);
+        return catererService.getCatererByClientId(userId);
     }
-    
-    
+
+
     @GetMapping("/{id}")
     public Caterer getCaterer(@PathVariable Long id) {
-       return catererService.getCaterer(id);
+        return catererService.getCaterer(id);
     }
 
     @PostMapping("")
     public Caterer createCaterer(@Valid @RequestBody NewCatererDTO caterer, BindingResult result) {
-        if (!CurrentUser.hasRole(Roles.ROLE_ADMIN)) throw new AuthorizationDeniedException("Only admins can create caterers.");
-    	if(result.hasErrors()) {
-    		throw new InvalidInputException("Caterer", result);
-    	}
-       return catererService.createCaterer(caterer);
+        if (!CurrentUser.hasRole(Roles.ROLE_ADMIN))
+            throw new AuthorizationDeniedException("Only admins can create caterers.");
+        if (result.hasErrors()) {
+            throw new InvalidInputException("Caterer", result);
+        }
+        return catererService.createCaterer(caterer);
     }
 
     @PatchMapping("/{id}")
@@ -70,14 +71,16 @@ public class CatererController {
         if (!CurrentUser.hasRole(Roles.ROLE_ADMIN) || !CurrentUser.hasRole(Roles.ROLE_CLNT)) {
             throw new AuthorizationDeniedException("Only admins or clients can update caterers.");
         }
-       return catererService.updateCaterer(id, caterer);
+        return catererService.updateCaterer(id, caterer);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCaterer(@PathVariable Long id) {
         if (catererService.deleteCaterer(id)) {
-            return new ResponseEntity<OperationResponse>(new OperationResponse("Caterer deleted successfully !"), HttpStatus.OK);
+            return new ResponseEntity<OperationResponse>(
+                    new OperationResponse("Caterer deleted successfully !"), HttpStatus.OK);
         }
-        return new ResponseEntity<OperationResponse>(new OperationResponse("Error occured !"), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<OperationResponse>(new OperationResponse("Error occured !"),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
