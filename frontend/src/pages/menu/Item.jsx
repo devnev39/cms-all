@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, removeFromCart } from "../../features/user/cartSlice";
+import {
+  addToCart,
+  removeFromCart,
+  setCart,
+} from "../../features/user/cartSlice";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import "../../Styles/Landing.css";
 
@@ -16,6 +20,7 @@ const glassCard = {
   margin: "24px 0",
 };
 
+// Read cart from session storage on page load
 const getCartFromSession = () => {
   try {
     const cart = JSON.parse(sessionStorage.getItem("cart"));
@@ -25,74 +30,58 @@ const getCartFromSession = () => {
   }
 };
 
-const saveCartToSession = (cart) => {
-  sessionStorage.setItem("cart", JSON.stringify(cart));
-};
-
 const Item = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const items = useSelector((state) => state.item.items);
+  const cart = useSelector((state) => state.cart.cart); // Redux cart
   const user = useCurrentUser();
-  const [quantity, setQuantity] = useState(1);
-  const [cart, setCart] = useState(getCartFromSession());
 
+  const [quantity, setQuantity] = useState(1);
+
+  // Hydrate Redux cart from session storage on mount
+  useEffect(() => {
+    const savedCart = getCartFromSession();
+    dispatch(setCart(savedCart)); // always set, even if empty
+  }, [dispatch]);
+
+  // If user logs out, clear cart
   useEffect(() => {
     if (!user) {
-      setCart([]);
       sessionStorage.removeItem("cart");
-      dispatch(removeFromCart(Number(id)));
+      dispatch(setCart([]));
     }
-  }, [user, id, dispatch]);
+  }, [user, dispatch]);
 
+  // Persist Redux cart to session storage whenever it changes
   useEffect(() => {
-    setCart(getCartFromSession());
-  }, []);
-
-  useEffect(() => {
-    dispatch({ type: "cart/setCart", payload: cart });
-  }, [cart, dispatch]);
+    sessionStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
   const item = items.find((i) => i.id === Number(id));
-  if (!item)
+  if (!item) {
     return <div className="text-white text-center">Item not found.</div>;
+  }
 
   const cartItem = cart.find((c) => c.item.id === item.id);
-  const currentQty = cartItem ? cartItem.quantity : 0;
+  const currentQty = cartItem ? cartItem.count : 0;
 
   const handleAdd = () => {
     if (!item.isAvailable) return;
-    let newCart;
-    if (cartItem) {
-      newCart = cart.map((c) =>
-        c.item.id === item.id ? { ...c, quantity: c.quantity + quantity } : c
-      );
-    } else {
-      newCart = [...cart, { item, quantity }];
-    }
-    setCart(newCart);
-    saveCartToSession(newCart);
-    dispatch(addToCart({ item, quantity }));
+    dispatch(addToCart({ item, count: quantity })); // ✅ fixed property name
+    setQuantity(1);
   };
 
   const handleQtyChange = (delta) => {
-    if (!cartItem && delta < 0) return;
-    let newQty = (cartItem ? cartItem.quantity : quantity) + delta;
+    if (!item.isAvailable) return;
+    let newQty = (cartItem ? cartItem.count : quantity) + delta;
     if (newQty < 1) newQty = 1;
-    let newCart;
-    if (cartItem) {
-      newCart = cart.map((c) =>
-        c.item.id === item.id ? { ...c, quantity: newQty } : c
-      );
-    } else {
-      newCart = [...cart, { item, quantity: newQty }];
+
+    const diff = newQty - (cartItem ? cartItem.count : 0);
+    if (diff > 0) {
+      dispatch(addToCart({ item, count: diff })); // ✅ fixed property name
     }
-    setCart(newCart);
-    saveCartToSession(newCart);
     setQuantity(newQty);
-    dispatch(
-      addToCart({ item, quantity: newQty - (cartItem ? cartItem.quantity : 0) })
-    );
   };
 
   return (
@@ -126,11 +115,13 @@ const Item = () => {
                     <button
                       className="btn btn-outline-light btn-sm fw-bold me-2"
                       onClick={() => handleQtyChange(-1)}
-                      disabled={currentQty <= 1}
+                      disabled={(cartItem ? cartItem.count : quantity) <= 1}
                     >
                       -
                     </button>
-                    <span className="fs-5 mx-2">{currentQty || quantity}</span>
+                    <span className="fs-5 mx-2">
+                      {cartItem ? cartItem.count : quantity}
+                    </span>
                     <button
                       className="btn btn-outline-light btn-sm fw-bold ms-2"
                       onClick={() => handleQtyChange(1)}
