@@ -1,6 +1,5 @@
 package com.cms.cms.service;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -15,7 +14,8 @@ import org.json.JSONObject;
 public class RazorpayService {
 
     // create Razorpay order using caterer's credentials
-    public Order createRazorpayOrder(String razorpayKey, String razorpaySecret, Long amountPaise, String receipt) throws Exception {
+    public Order createRazorpayOrder(String razorpayKey, String razorpaySecret, Long amountPaise,
+            String receipt) throws Exception {
         RazorpayClient client = new RazorpayClient(razorpayKey, razorpaySecret);
 
         JSONObject orderRequest = new JSONObject();
@@ -28,7 +28,7 @@ public class RazorpayService {
         return order;
     }
 
- // verify the signature: requires the same secret used to create the order
+    // verify the signature: requires the same secret used to create the order
     public boolean verifySignature(Map<String, String> attributes, String secret) {
         try {
             // Convert Map to JSONObject

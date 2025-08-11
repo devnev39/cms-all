@@ -148,7 +148,8 @@
 				<groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <configuration>
-                    <url>jdbc:mysql://db-1.c9i0weam0ign.ap-south-1.rds.amazonaws.com/cms</url>
+                    <!-- <url>jdbc:mysql://db-1.c9i0weam0ign.ap-south-1.rds.amazonaws.com/cms</url> -->
+                    <url>jdbc:mysql://cms-local.cziq2eos02ec.ap-south-1.rds.amazonaws/cms</url>
                     <user>admin</user>
 					<password>cmsadmin1234</password>
 

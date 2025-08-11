@@ -75,6 +75,23 @@ public class UserService {
 		return repo.save(user);
 	}
 
+	public User createClientUser(NewUserDTO u) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		u.setPassword(encoder.encode(u.getPassword()));
+		// get the role from role_id
+
+		Role r = roleRepo.findRoleByType("ROLE_CLNT")
+				.orElseThrow(() -> new CustomEntityNotFoundException("Role"));
+
+		User user = mapper.map(u, User.class);
+
+		user.setRole(r);
+		user.setId(null);
+		// user.setCreatedBy(CurrentUser.getCurrentUser().getEmail());
+
+		return repo.save(user);
+	}
+
 	public User updateUser(Long id, UserDTO user) {
 		if (!CurrentUser.hasRole(Roles.ROLE_ADMIN) && CurrentUser.getCurrentUserId() != id)
 			throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "Not authorized !");

@@ -160,8 +160,6 @@ function CouponUsage() {
               <tr>
                 <th>Date & Time</th>
                 <th>Updated By</th>
-                <th>Previous Count</th>
-                <th>New Count</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -171,8 +169,6 @@ function CouponUsage() {
                   <tr key={index}>
                     <td>{formatDate(usage.createdAt)}</td>
                     <td>{usage.updatedBy || "System"}</td>
-                    <td>{usage.previousCount}</td>
-                    <td>{usage.newCount}</td>
                     <td>
                       <span
                         className={`badge bg-${

@@ -9,6 +9,7 @@ export const createOrder = (cart, token) => {
   });
 };
 export const verifyPayment = (data, token) => {
+  console.log(data);
   return axios.post(`${config.base_url}/order/verify-payment`, data, {
     headers: {
       Authorization: `Bearer ${token}`,
