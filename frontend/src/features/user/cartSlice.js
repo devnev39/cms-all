@@ -7,46 +7,55 @@ const cartSlice = createSlice({
   },
   reducers: {
     setCart: (state, action) => {
-      state.cart = action.payload;
+      // Always ensure cart is an array
+      state.cart = Array.isArray(action.payload) ? action.payload : [];
     },
     addToCart: (state, action) => {
-      state.cart = state.cart.concat({
-        item: action.payload.item,
-        count: action.payload.count,
-      });
+      const { item, count } = action.payload;
+
+      // Defensive fallback if state.cart is null/undefined
+      if (!Array.isArray(state.cart)) {
+        state.cart = [];
+      }
+
+      // Check if item already exists in cart
+      const existingIndex = state.cart.findIndex(
+        (cartItem) => cartItem.item.id === item.id
+      );
+
+      if (existingIndex !== -1) {
+        // Item exists, increase the count
+        state.cart[existingIndex].count += count;
+      } else {
+        // New item, add to cart
+        state.cart.push({ item, count });
+      }
     },
     addOneMoreToCart: (state, action) => {
-      state.cart = state.cart.map((item) => {
-        if (item.item.id === action.payload.id) {
-          return { ...item, count: item.count + 1 };
+      state.cart = state.cart.map((cartItem) => {
+        if (cartItem.item.id === action.payload.id) {
+          return { ...cartItem, count: cartItem.count + 1 };
         }
-        return item;
+        return cartItem;
       });
     },
     removeOneFromCart: (state, action) => {
-      const item = state.cart.filter(
-        (item) => item.item.id === action.payload.id
+      const item = state.cart.find(
+        (cartItem) => cartItem.item.id === action.payload.id
       );
-      if (item.length === 0) return;
+      if (!item) return;
 
-      if (item[0].count === 1) {
+      if (item.count === 1) {
         state.cart = state.cart.filter(
-          (item) => item.item.id !== action.payload.id
+          (cartItem) => cartItem.item.id !== action.payload.id
         );
       } else {
-        item[0].count = item[0].count - 1;
+        item.count = item.count - 1;
       }
-      // state.cart = state.cart.map((item) => {
-      //   if (item.item.id === action.payload.id) {
-      //     return { ...item, count: item.count - 1 };
-      //   }
-      // return item;
-      // });
     },
     removeFromCart: (state, action) => {
-      console.log(action.payload);
       state.cart = state.cart.filter(
-        (item) => item.item.id !== action.payload.id
+        (cartItem) => cartItem.item.id !== action.payload.id
       );
     },
   },
