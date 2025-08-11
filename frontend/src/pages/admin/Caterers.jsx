@@ -36,7 +36,7 @@ function Caterers() {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedCaterer, setSelectedCaterer] = useState(null);
   useEffect(() => {
-    if (!caterers) {
+    if (!caterers || caterers.length == 0) {
       const token = sessionStorage.getItem("token");
       if (token) {
         getAllCaterers(token)
