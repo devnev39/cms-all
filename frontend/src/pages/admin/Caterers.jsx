@@ -36,19 +36,21 @@ function Caterers() {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedCaterer, setSelectedCaterer] = useState(null);
   useEffect(() => {
-    if (!caterers) {
-      const token = sessionStorage.getItem("token");
-      if (token) {
-        getAllCaterers(token)
-          .then((resp) => {
-            dispatch(setCaterers(resp.data));
-          })
-          .catch((err) => {
-            console.error(err);
-          });
-      }
+  if (!Array.isArray(caterers) || caterers.length === 0) {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      getAllCaterers(token)
+        .then((resp) => {
+          console.log(resp.data);
+          dispatch(setCaterers(resp.data));
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     }
-  }, []);
+  }
+}, [caterers, dispatch]);
+
 
   const formik = useFormik({
     initialValues: {
