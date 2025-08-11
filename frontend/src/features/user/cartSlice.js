@@ -10,7 +10,7 @@ const cartSlice = createSlice({
       // Always ensure cart is an array
       state.cart = Array.isArray(action.payload) ? action.payload : [];
     },
-    order: (state, action) => {
+    addToCart: (state, action) => {
       const { item, count } = action.payload;
 
       // Defensive fallback if state.cart is null/undefined
