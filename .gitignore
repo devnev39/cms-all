@@ -1,1 +1,3 @@
-/.metadata/
+backend/src/main/resources/.env
+
+frontend/.env
